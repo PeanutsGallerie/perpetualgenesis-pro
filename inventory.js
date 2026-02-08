@@ -417,3 +417,5 @@ window.exportToPDF = function() {
 document.addEventListener('DOMContentLoaded', () => {
   renderInventoryPlanTabs();
 });
+
+
