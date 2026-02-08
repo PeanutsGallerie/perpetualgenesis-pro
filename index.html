@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <link rel="manifest" href="/manifest.json">
+  [""...]#00eeff">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=5.0, user-scalable=yes">
+  <meta name="robots" content="noindex, nofollow">
+  <meta charset="UTF-8">
+  <title>Perpetual Genesis</title>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  </head>
+
+<body>
+
+  <div class="container">
+    <div id="logo">
+      <img src="perpetual-genesis-header.png" alt="Perpetual Genesis  Planner" class="app-logo">
+      <p class="tagline">
+        Indoor seed planning and inventory management with local data storage.
+      </p>
+    </div>
+    <button id="themeToggle" title="Toggle Dark/Light Mode">🌙</button>
+    <h1></h1>
+    <div class="tabs">
+      <button class="active" onclick="showTab('calculator')">Calculator</button>
+      <button onclick="showTab('perpetual')">Perpetual Plan</button>
+      <button onclick="showTab('mygarden')">My Garden</button>
+      <button onclick="showTab('timeline')">Timeline</button>
+      <button onclick="showTab('layout')">Layout</button>
+      <button onclick="showTab('inventory')">Inventory</button>
+      <button onclick="showTab('spacing')">Spacing & Yield</button>
+      <button onclick="showTab('help')">Help & About</button>
+      <button id="sharePlanBtn">Share Plan</button>
+
+
+
+    </div>
+
+    <div id="calculator" class="tab-content active">
+      <p style="text-align:center; max-width:800px; margin:0 auto 30px;">
+        Choose your season and category, enter your last frost or first frost date (or any custom planning date), select
+        your growing method, and get a personalized extended planting schedule!
+      </p>
+      <div class="controls">
+        <div>
+          <label for="season">Season:</label>
+          <select id="season" onchange="updateTables()">
+            <option value="spring">Spring (Last Frost)</option>
+            <option value="fall">Fall (First Frost)</option>
+          </select>
+        </div>
+        <div>
+          <label for="category">Category:</label>
+          <select id="category" onchange="updateTables()">
+            <option value="all">All Crops</option>
+            <option value="vegetables">Vegetables</option>
+            <option value="fruits">Fruits</option>
+            <option value="herbs">Herbs</option>
+            <option value="flowers">Flowers</option>
+          </select>
+        </div>
+        <div>
+          <label for="growingMethod">Growing Method:</label>
+          <select id="growingMethod" onchange="updateMethodNote()">
+            <option value="outdoor">Outdoor (Natural)</option>
+            <option value="rowcovers">Row Covers (Light Protection)</option>
+            <option value="greenhouse">Greenhouse/Unheated Hoop House</option>
+          </select>
+        </div>
+        <div>
+          <label for="frostDate" id="frostLabel">Last Spring Frost Date:</label>
+          <input type="text" id="frostDate" placeholder="MM/DD/YYYY">
+        </div>
+        <div class="action-buttons">
+          <button class="primary" onclick="calculateDates()">CalculateDates</button>
+          <button onclick="resetTable()">Reset</button>
+        </div>
+      </div>
+      <div style="text-align:center;">
+        <div id="methodNote" class="method-note">Outdoor: Standard frost-based timing.</div>
+      </div>
+      <input type="text" id="search" onkeyup="filterTable()" placeholder="Search crops...">
+      <div id="table-wrapper">
+
+   <!-- Spring All Table -->
+    <table id="springAllTable">
+        <thead>
+            <tr>
+                <th onclick="sortTable(0, this)">Seedlings</th>
+                <th onclick="sortTable(1, this)">Weeks to Start Before Last Frost</th>
+                <th onclick="sortTable(2, this)">Optimal Soil Temp (°F)</th>
+                <th onclick="sortTable(3, this)">Days to Maturity</th>
+                <th>Succession Tips</th>
+                <th>Good Companions</th>
+                <th>Start Seeds Indoors (From–To)</th>
+                <th>Safe Transplant Timing (Relative to Last Frost)</th>
+                <th>Transplant Outdoors (From–To)</th>
+                <th>Estimated Harvest</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="section"><td colspan="10">Vegetables</td></tr>
+            <tr><td>Artichoke</td><td>8–12</td><td>70–80</td><td>120–150</td><td></td><td>Sunflowers, tarragon</td><td></td><td>on frost-free date</td><td></td><td></td></tr>
+            <tr><td>Asparagus (crowns)*</td><td>—</td><td>—</td><td>2–3 years</td><td></td><td>Tomatoes, parsley</td><td></td><td>2 weeks before</td><td></td><td></td></tr>
+            <tr><td>Beans (bush/pole)*</td><td>—</td><td>60–85</td><td>50–70</td><td>Every 2–3 weeks</td><td>Corn, squash, cucumbers</td><td></td><td>1 to 2 weeks after</td><td></td><td></td></tr>
+            <tr><td>Beets*</td><td>5–6</td><td>50–85</td><td>50–70</td><td>Every 3 weeks</td><td>Lettuce, onions</td><td></td><td>2 weeks before</td><td></td><td></td></tr>
+            <tr><td>Bok Choy</td><td>4–6</td><td>50–80</td><td>45–60</td><td>Every 2 weeks</td><td>Beans, celery</td><td></td><td>4 weeks before</td><td></td><td></td></tr>
+            <tr><td>Broccoli</td><td>4–6</td><td>65–75</td><td>60–80</td><td>Every 3 weeks</td><td>Celery, onions, potatoes</td><td></td><td>2 weeks before</td><td></td><td></td></tr>
+            <tr><td>Brussels Sprouts</td><td>4–6</td><td>65–75</td><td>90–120</td><td></td><td>Sage, dill</td><td></td><td>2 weeks before</td><td></td><td></td></tr>
+            <tr><td>Cabbage</td><td>4–6</td><td>65–75</td><td>60–90</td><td>Every 3 weeks</td><td>Dill, celery, onions</td><td></td><td>4 weeks before</td><td></td><td></td></tr>
+            <tr><td>Carrots*</td><td>—</td><td>50–85</td><td>60–80</td><td>Every 3 weeks</td><td>Onions, leeks, rosemary</td><td></td><td>2 to 3 weeks before</td><td></td><td></td></tr>
+            <tr><td>Cauliflower</td><td>4–6</td><td>65–75</td><td>60–80</td><td>Every 3 weeks</td><td>Celery, onions</td><td></td><td>2 weeks before</td><td></td><td></td></tr>
+            <tr><td>Celery & Celeriac</td><td>10–12</td><td>70–75</td><td>90–120</td><td></td><td>Beans, cabbage</td><td></td><td>1 week after</td><td></td><td></td></tr>
+            <tr><td>Chard (Rainbow)</td><td>5–6</td><td>50–85</td><td>50–65</td><td>Every 3 weeks</td><td>Onions, beans, nasturtium</td><td>—</td><td>2 weeks before</td><td>—</td><td>—</td></tr>
+            <tr><td>Chicory (Radicchio)</td><td>4–6</td><td>60–75</td><td>60–85</td><td>Every 3 weeks</td><td>Carrots, onions</td><td>—</td><td>2–4 weeks before</td><td>—</td><td>—</td></tr>
+            <tr><td>Collards</td><td>4–6</td><td>50–80</td><td>60–85</td><td>Every 3 weeks</td><td>Tomatoes, onions</td><td></td><td>4 weeks before</td><td></td><td></td></tr>
+            <tr><td>Corn*</td><td>—</td><td>60–95</td><td>60–90</td><td>Every 2 weeks</td><td>Beans, squash, cucumbers</td><td></td><td>1 to 2 weeks after</td><td></td><td></td></tr>
+            <tr><td>Cucumber</td><td>3–4</td><td>70–90</td><td>50–70</td><td>Every 2 weeks</td><td>Beans, corn, radishes</td><td></td><td>1 to 2 weeks after</td><td></td><td></td></tr>
+            <tr><td>Daikon Radish</td><td>—</td><td>50–85</td><td>50–70</td><td>Every 3 weeks</td><td>Cucumbers, peas, lettuce</td><td>—</td><td>3–5 weeks before</td><td>—</td><td>—</td></tr>
+            <tr><td>Eggplant</td><td>8–10</td><td>75–90</td><td>60–80</td><td></td><td>Beans, peppers</td><td></td><td>2 to 3 weeks after</td><td></td><td></td></tr>
+            <tr><td>Endive</td><td>4–6</td><td>60–75</td><td>50–70</td><td>Every 3 weeks</td><td>Carrots, radishes</td><td></td><td>2 weeks before</td><td></td><td></td></tr>
+            <tr><td>Escarole</td><td>4–6</td><td>60–75</td><td>60–80</td><td>Every 3 weeks</td><td>Carrots, radishes</td><td></td><td>2 weeks before</td><td></td><td></td></tr>
+            <tr><td>Fava Beans</td><td>—</td><td>45–75</td><td>75–90</td><td>—</td><td>Potatoes, spinach, dill</td><td>—</td><td>4–6 weeks before</td><td>—</td><td>—</td></tr>
+            <tr><td>Fennel</td><td>6–8</td><td>60–75</td><td>80–100</td><td></td><td>Dill, cilantro</td><td></td><td>on frost-free date</td><td></td><td></td></tr>
+            <tr><td>Green Onions (Scallions)</td><td>—</td><td>50–85</td><td>50–70</td><td>Every 3 weeks</td><td>Carrots, lettuce, beets</td><td>—</td><td>3–4 weeks before</td><td>—</td><td>—</td></tr>
+            <tr><td>Kale</td><td>4–6</td><td>50–80</td><td>50–70</td><td>Every 3 weeks</td><td>Beets, onions</td><td></td><td>4 weeks before</td><td></td><td></td></tr>
+            <tr><td>Kohlrabi*</td><td>4–6</td><td>50–80</td><td>50–70</td><td>Every 3 weeks</td><td>Beets, celery</td><td></td><td>4 weeks before</td><td></td><td></td></tr>
+            <tr><td>Leeks</td><td>8–10</td><td>60–75</td><td>100–130</td><td></td><td>Carrots, celery</td><td></td><td>2 weeks before</td><td></td><td></td></tr>
+            <tr><td>Lettuce</td><td>4–5</td><td>50–75</td><td>45–70</td><td>Every 2 weeks</td><td>Carrots, radishes, onions</td><td></td><td>3 to 4 weeks before</td><td></td><td></td></tr>
+            <tr><td>Lima Beans</td><td>—</td><td>65–85</td><td>65–80</td><td>Every 3 weeks</td><td>Corn, cucumbers</td><td>—</td><td>1 to 2 weeks after</td><td>—</td><td>—</td></tr>
+            <tr><td>Okra*</td><td>4–6</td><td>75–95</td><td>50–70</td><td>Every 2 weeks</td><td>Peppers, sweet potatoes</td><td></td><td>2 to 4 weeks after</td><td></td><td></td></tr>
+            <tr><td>Onions</td><td>8–10</td><td>60–75</td><td>90–120</td><td></td><td>Carrots, lettuce, tomatoes</td><td></td><td>4 weeks before</td><td></td><td></td></tr>
+            <tr><td>Parsnips*</td><td>—</td><td>50–75</td><td>100–120</td><td></td><td>Peas, radishes</td><td></td><td>2 to 4 weeks before</td><td></td><td></td></tr>
+            <tr><td>Peas*</td><td>—</td><td>40–75</td><td>55–75</td><td>Every 2 weeks</td><td>Carrots, radishes, turnips</td><td></td><td>4 to 6 weeks before</td><td></td><td></td></tr>
+            <tr><td>Peppers</td><td>8–10</td><td>75–90</td><td>60–90</td><td></td><td>Basil, onions, tomatoes</td><td></td><td>2 weeks after</td><td></td><td></td></tr>
+            <tr><td>Potatoes*</td><td>—</td><td>—</td><td>70–100</td><td>Every 3 weeks</td><td>Beans, corn, cabbage</td><td></td><td>4 weeks before</td><td></td><td></td></tr>
+            <tr><td>Pumpkins</td><td>3–4</td><td>75–95</td><td>90–120</td><td></td><td>Corn, beans</td><td></td><td>2 weeks after</td><td></td><td></td></tr>
+            <tr><td>Radishes*</td><td>—</td><td>50–85</td><td>25–40</td><td>Every 1–2 weeks</td><td>Lettuce, peas, carrots</td><td></td><td>4 to 6 weeks before</td><td></td><td></td></tr>
+            <tr><td>Rutabaga*</td><td>4–6</td><td>50–85</td><td>80–100</td><td></td><td>Peas, onions</td><td></td><td>6 to 8 weeks before</td><td></td><td></td></tr>
+            <tr><td>Shallots (sets)</td><td>—</td><td>50–75</td><td>90–120</td><td>—</td><td>Carrots, beets, lettuce</td><td>—</td><td>4 weeks before</td><td>—</td><td>—</td></tr>
+            <tr><td>Spinach</td><td>4–6</td><td>50–75</td><td>40–60</td><td>Every 2 weeks</td><td>Strawberries, peas</td><td></td><td>3 to 6 weeks before</td><td></td><td></td></tr>
+            <tr><td>Summer Squash</td><td>3–4</td><td>70–95</td><td>45–60</td><td>Every 2 weeks</td><td>Corn, beans, nasturtium</td><td>—</td><td>2 weeks after</td><td>—</td><td>—</td></tr>
+            <tr><td>Swiss Chard</td><td>5–6</td><td>50–85</td><td>50–70</td><td>Every 3 weeks</td><td>Onions, beans</td><td></td><td>2 weeks before</td><td></td><td></td></tr>
+            <tr><td>Sweet Potatoes (slips)*</td><td>—</td><td>75–95</td><td>90–120</td><td></td><td>Okra, peppers</td><td></td><td>3 to 4 weeks after</td><td></td><td></td></tr>
+            <tr><td>Tomatillos</td><td>6–8</td><td>70–85</td><td>70–90</td><td>—</td><td>Basil, tomatoes, marigolds</td><td>—</td><td>1 to 2 weeks after</td><td>—</td><td>—</td></tr>
+            <tr><td>Tomatoes</td><td>6–8</td><td>70–85</td><td>60–90</td><td></td><td>Basil, marigolds, carrots</td><td></td><td>1 to 2 weeks after</td><td></td><td></td></tr>
+            <tr><td>Turnips*</td><td>—</td><td>50–85</td><td>40–60</td><td>Every 3 weeks</td><td>Peas, beans</td><td></td><td>4 to 6 weeks before</td><td></td><td></td></tr>
+            <tr><td>Winter Squash</td><td>3–4</td><td>70–95</td><td>90–120</td><td>—</td><td>Corn, beans</td><td>—</td><td>2 weeks after</td><td>—</td><td>—</td></tr>
+            <tr><td>Zucchini</td><td>3–4</td><td>70–95</td><td>45–60</td><td>Every 2 weeks</td><td>Corn, beans, nasturtium</td><td>—</td><td>2 weeks after</td><td>—</td><td>—</td></tr>
+            <tr class="section"><td colspan="10">Fruits</td></tr>
+            <tr><td>Cantaloupe</td><td>3–4</td><td>75–95</td><td>75–100</td><td></td><td>Corn, nasturtium, radishes</td><td></td><td>2 weeks after</td><td></td><td></td></tr>
+            <tr><td>Honeydew</td><td>3–4</td><td>75–95</td><td>80–105</td><td></td><td>Corn, nasturtium, radishes</td><td></td><td>2 weeks after</td><td></td><td></td></tr>
+            <tr><td>Watermelon</td><td>3–4</td><td>75–95</td><td>70–100</td><td></td><td>Corn, nasturtium, radishes</td><td></td><td>2 weeks after</td><td></td><td></td></tr>
+            <tr><td>Strawberries (from seed)</td><td>10–12</td><td>60–75</td><td>120+ (first fruit year 1)</td><td>Renew runners</td><td>Borage, spinach, beans</td><td></td><td>4 weeks before</td><td></td><td></td></tr>
+            <tr class="section"><td colspan="10">Herbs</td></tr>
+            <tr><td>Anise</td><td>6–8</td><td>60–75</td><td>90–120</td><td>—</td><td>Cilantro, coriander</td><td>—</td><td>on frost-free date</td><td>—</td><td>—</td></tr>
+            <tr><td>Basil</td><td>6–8</td><td>70–85</td><td>60–80</td><td>Every 3 weeks</td><td>Tomatoes, peppers</td><td></td><td>1 week after</td><td></td><td></td></tr>
+            <tr><td>Borage</td><td>4–6</td><td>65–75</td><td>60–80</td><td></td><td>Tomatoes, squash</td><td></td><td>on frost-free date</td><td></td><td></td></tr>
+            <tr><td>Catnip</td><td>6–8</td><td>65–75</td><td>Perennial</td><td></td><td>Roses, beets</td><td></td><td>on frost-free date</td><td></td><td></td></tr>
+            <tr><td>Caraway</td><td>6–8</td><td>60–70</td><td>120–150</td><td>—</td><td>Peas, radishes</td><td>—</td><td>3–5 weeks before</td><td>—</td><td>—</td></tr>
+            <tr><td>Chamomile</td><td>4–6</td><td>65–75</td><td>60–90</td><td></td><td>Cabbage, onions</td><td></td><td>1 week after</td><td></td><td></td></tr>
+            <tr><td>Chervil</td><td>4–6</td><td>60–70</td><td>50–70</td><td>Every 3 weeks</td><td>Radishes, lettuce</td><td></td><td>2 weeks before</td><td></td><td></td></tr>
+            <tr><td>Chives</td><td>8–10</td><td>60–75</td><td>60–80</td><td></td><td>Carrots, tomatoes</td><td></td><td>on frost-free date</td><td></td><td></td></tr>
+            <tr><td>Cilantro/Coriander*</td><td>4–6</td><td>55–75</td><td>45–70</td><td>Every 2–3 weeks</td><td>Spinach, anise</td><td></td><td>on frost-free date</td><td></td><td></td></tr>
+            <tr><td>Dill</td><td>4–6</td><td>60–75</td><td>60–80</td><td>Every 3 weeks</td><td>Cabbage, cucumbers</td><td></td><td>2 weeks before</td><td></td><td></td></tr>
+            <tr><td>Epazote</td><td>6–8</td><td>70–85</td><td>60–80</td><td>—</td><td>Beans, corn</td><td>—</td><td>1–2 weeks after</td><td>—</td><td>—</td></tr>
+            <tr><td>Fennel</td><td>6–8</td><td>60–75</td><td>80–100</td><td></td><td>Dill, cilantro</td><td></td><td>on frost-free date</td><td></td><td></td></tr>
+            <tr><td>Hyssop</td><td>8–10</td><td>65–75</td><td>Perennial</td><td>—</td><td>Cabbage, grapes</td><td>—</td><td>on frost-free date</td><td>—</td><td>—</td></tr>
+            <tr><td>Lavender</td><td>10–12</td><td>65–75</td><td>Perennial</td><td></td><td>Rosemary, thyme</td><td></td><td>on frost-free date</td><td></td><td></td></tr>
+            <tr><td>Lemon Balm</td><td>6–8</td><td>65–75</td><td>Perennial</td><td></td><td>Fruit trees, tomatoes</td><td></td><td>on frost-free date</td><td></td><td></td></tr>
+            <tr><td>Lovage</td><td>8–10</td><td>60–70</td><td>Perennial</td><td></td><td>Beans, potatoes</td><td></td><td>on frost-free date</td><td></td><td></td></tr>
+            <tr><td>Marjoram (Sweet)</td><td>6–8</td><td>65–75</td><td>60–70</td><td>—</td><td>Tomatoes, peppers, basil</td><td>—</td><td>1 week after</td><td>—</td><td>—</td></tr>
+            <tr><td>Mint</td><td>6–8</td><td>65–75</td><td>Perennial</td><td></td><td>Cabbage, tomatoes</td><td></td><td>on frost-free date</td><td></td><td></td></tr>
+            <tr><td>Oregano</td><td>6–8</td><td>65–75</td><td>Perennial</td><td></td><td>Basil, peppers</td><td></td><td>on frost-free date</td><td></td><td></td></tr>
+            <tr><td>Parsley</td><td>8–10</td><td>60–75</td><td>70–90</td><td>Every 3 weeks</td><td>Tomatoes, asparagus</td><td></td><td>2 to 3 weeks before</td><td></td><td></td></tr>
+            <tr><td>Rosemary</td><td>8–10</td><td>70–80</td><td>Perennial</td><td></td><td>Sage, beans</td><td></td><td>1 week after</td><td></td><td></td></tr>
+            <tr><td>Sage</td><td>6–8</td><td>65–75</td><td>Perennial</td><td></td><td>Rosemary, cabbage</td><td></td><td>on frost-free date</td><td></td><td></td></tr>
+            <tr><td>Salad Burnet</td><td>6–8</td><td>60–75</td><td>Perennial</td><td>—</td><td>Cucumbers, lettuce</td><td>—</td><td>3–4 weeks before</td><td>—</td><td>—</td></tr>
+            <tr><td>Sorrel (French / Garden)</td><td>—</td><td>50–75</td><td>50–70</td><td>Every 4 weeks</td><td>Strawberries, cabbage</td><td>—</td><td>4 weeks before</td><td>—</td><td>—</td></tr>
+            <tr><td>Summer Savory</td><td>4–6</td><td>65–75</td><td>60–70</td><td></td><td>Beans, onions</td><td></td><td>1 week after</td><td></td><td></td></tr>
+            <tr><td>Tarragon</td><td>8–10</td><td>65–75</td><td>Perennial</td><td></td><td>Eggplant, artichoke</td><td></td><td>on frost-free date</td><td></td><td></td></tr>
+            <tr><td>Thyme</td><td>8–10</td><td>65–75</td><td>Perennial</td><td></td><td>Cabbage, tomatoes</td><td></td><td>on frost-free date</td><td></td><td></td></tr>
+            <tr class="section"><td colspan="10">Flowers</td></tr>
+            <tr><td>Ageratum</td><td>6–8</td><td>70–80</td><td>60–80</td><td></td><td>Salvia, zinnias</td><td></td><td>on frost-free date</td><td></td><td></td></tr>
+            <tr><td>Amaranth</td><td>6–8</td><td>70–85</td><td>70–90</td><td></td><td>Marigolds</td><td></td><td>1 week after</td><td></td><td></td></tr>
+            <tr><td>Alyssum*</td><td>4–6</td><td>65–75</td><td>50–70</td><td>Every 3 weeks</td><td>Vegetables (pest control)</td><td></td><td>1 to 2 weeks before</td><td></td><td></td></tr>
+            <tr><td>Aster</td><td>6–8</td><td>65–75</td><td>90–120</td><td></td><td>Zinnias, cosmos</td><td></td><td>on frost-free date</td><td></td><td></td></tr>
+            <tr><td>Begonia</td><td>10–12</td><td>70–80</td><td>90–120</td><td></td><td>Impatiens, coleus</td><td></td><td>1 to 2 weeks after</td><td></td><td></td></tr>
+            <tr><td>Celosia</td><td>6–8</td><td>70–80</td><td>70–90</td><td></td><td>Marigolds</td><td></td><td>1 week after</td><td></td><td></td></tr>
+            <tr><td>Cosmos*</td><td>4–6</td><td>70–80</td><td>70–90</td><td></td><td>Marigolds, zinnias</td><td></td><td>on frost-free date</td><td></td><td></td></tr>
+            <tr><td>Dahlia</td><td>4–6</td><td>70–80</td><td>90–120</td><td></td><td>Cannas, salvia</td><td></td><td>1 week after</td><td></td><td></td></tr>
+            <tr><td>Delphinium</td><td>10–12</td><td>65–75</td><td>120–150</td><td></td><td>Larkspur, salvia</td><td></td><td>on frost-free date</td><td></td><td></td></tr>
+            <tr><td>Dianthus</td><td>8–10</td><td>65–75</td><td>90–120</td><td></td><td>Salvia, petunias</td><td></td><td>on frost-free date</td><td></td><td></td></tr>
+            <tr><td>Geranium (Pelargonium)</td><td>10–12</td><td>70–80</td><td>90–120</td><td></td><td>Petunias, salvia</td><td></td><td>on frost-free date</td><td></td><td></td></tr>
+            <tr><td>Lobelia</td><td>8–10</td><td>70–75</td><td>70–90</td><td></td><td>Alyssum, petunias</td><td></td><td>on frost-free date</td><td></td><td></td></tr>
+            <tr><td>Marigold</td><td>4–6</td><td>70–80</td><td>50–70</td><td>Every 3 weeks</td><td>Tomatoes, peppers</td><td></td><td>1 week after</td><td></td><td></td></tr>
+            <tr><td>Nasturtium*</td><td>3–4</td><td>65–75</td><td>50–70</td><td>Every 3 weeks</td><td>Cucumbers, squash</td><td>—</td><td>1 week after</td><td></td><td></td></tr>
+            <tr><td>Petunia</td><td>10–12</td><td>70–80</td><td>70–90</td><td></td><td>Salvia, geraniums</td><td></td><td>on frost-free date</td><td></td><td></td></tr>
+            <tr><td>Salvia</td><td>6–8</td><td>70–80</td><td>70–90</td><td></td><td>Petunias, marigolds</td><td></td><td>on frost-free date</td><td></td><td></td></tr>
+            <tr><td>Snap Peas</td><td>—</td><td>45–75</td><td>50–65</td><td>Every 2 weeks</td><td>Carrots, radishes</td><td>—</td><td>4 to 6 weeks before</td><td>—</td><td>—</td></tr>
+            <tr><td>Statice</td><td>8–10</td><td>70–75</td><td>100–120</td><td></td><td>Marigolds, zinnias</td><td></td><td>on frost-free date</td><td></td><td></td></tr>
+            <tr><td>Sunflower*</td><td>2–4</td><td>70–85</td><td>70–100</td><td></td><td>Corn, cucumbers</td><td></td><td>on frost-free date</td><td></td><td></td></tr>
+            <tr><td>Sweet Pea*</td><td>4–6</td><td>55–65</td><td>60–80</td><td>Every 2 weeks</td><td>Radishes, lettuce</td><td></td><td>4 to 6 weeks before</td><td></td><td></td></tr>
+            <tr><td>Verbena</td><td>8–10</td><td>70–80</td><td>70–90</td><td></td><td>Zinnias, marigolds</td><td></td><td>1 week after</td><td></td><td></td></tr>
+            <tr><td>Zinnia*</td><td>4–6</td><td>70–85</td><td>60–80</td><td>Every 3 weeks</td><td>Marigolds, cosmos</td><td></td><td>1 week after</td><td></td><td></td></tr>
+            <tr><td>Snapdragon</td><td>8–10</td><td>65–75</td><td>90–120</td><td></td><td>Roses, salvia</td><td></td><td>on frost-free date</td><td></td><td></td></tr>
+            <tr><td>Pansy/Viola</td><td>10–12</td><td>60–70</td><td>50–70</td><td>Every 3 weeks</td><td>Spring bulbs</td><td></td><td>4 weeks before</td><td></td><td></td></tr>
+            <tr><td>Coleus</td><td>8–10</td><td>70–85</td><td>60–80</td><td></td><td>Impatiens</td><td></td><td>1 week after</td><td></td><td></td></tr>
+            <tr><td>Impatiens</td><td>8–10</td><td>70–80</td><td>60–80</td><td></td><td>Coleus, begonias</td><td></td><td>1 week after</td><td></td><td></td></tr>
+        </tbody>
+    </table>               
+            <!-- Spring Vegetables Table -->
+                <table id="springVegetablesTable">
+                    <thead>
+                        <tr>
+                            <th onclick="sortTable(0, this)">Seedlings</th>
+                            <th onclick="sortTable(1, this)">Weeks to Start Before Last Frost</th>
+                            <th onclick="sortTable(2, this)">Optimal Soil Temp (°F)</th>
+                            <th onclick="sortTable(3, this)">Days to Maturity</th>
+                            <th>Succession Tips</th>
+                            <th>Good Companions</th>
+                            <th>Start Seeds Indoors (From–To)</th>
+                            <th>Safe Transplant Timing (Relative to Last Frost)</th>
+                            <th>Transplant Outdoors (From–To)</th>
+                            <th>Estimated Harvest</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="section"><td colspan="10">Vegetables</td></tr>
+                        <tr><td>Artichoke</td><td>8–12</td><td>70–80</td><td>120–150</td><td></td><td>Sunflowers, tarragon</td><td></td><td>on frost-free date</td><td></td><td></td></tr>
+                        <tr><td>Arugula*</td><td>—</td><td>45–75</td><td>30–50</td><td>Every 2 weeks</td><td>Beets, carrots, lettuce</td><td>—</td><td>on frost-free date</td><td>—</td><td>—</td></tr>
+                        <tr><td>Asparagus (crowns)*</td><td>—</td><td>—</td><td>2–3 years</td><td></td><td>Tomatoes, parsley</td><td></td><td>2 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Beans (bush/pole)*</td><td>—</td><td>60–85</td><td>50–70</td><td>Every 2–3 weeks</td><td>Corn, squash, cucumbers</td><td></td><td>1 to 2 weeks after</td><td></td><td></td></tr>
+                        <tr><td>Beets*</td><td>5–6</td><td>50–85</td><td>50–70</td><td>Every 3 weeks</td><td>Lettuce, onions</td><td></td><td>2 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Bok Choy</td><td>4–6</td><td>50–80</td><td>45–60</td><td>Every 2 weeks</td><td>Beans, celery</td><td></td><td>4 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Broccoli</td><td>4–6</td><td>65–75</td><td>60–80</td><td>Every 3 weeks</td><td>Celery, onions, potatoes</td><td></td><td>2 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Brussels Sprouts</td><td>4–6</td><td>65–75</td><td>90–120</td><td></td><td>Sage, dill</td><td></td><td>2 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Cabbage</td><td>4–6</td><td>65–75</td><td>60–90</td><td>Every 3 weeks</td><td>Dill, celery, onions</td><td></td><td>4 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Carrots*</td><td>—</td><td>50–85</td><td>60–80</td><td>Every 3 weeks</td><td>Onions, leeks, rosemary</td><td></td><td>2 to 3 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Cauliflower</td><td>4–6</td><td>65–75</td><td>60–80</td><td>Every 3 weeks</td><td>Celery, onions</td><td></td><td>2 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Celery & Celeriac</td><td>10–12</td><td>70–75</td><td>90–120</td><td></td><td>Beans, cabbage</td><td></td><td>1 week after</td><td></td><td></td></tr>
+                        <tr><td>Chard (Rainbow)</td><td>5–6</td><td>50–85</td><td>50–65</td><td>Every 3 weeks</td><td>Onions, beans, nasturtium</td><td>—</td><td>2 weeks before</td><td>—</td><td>—</td></tr>
+                        <tr><td>Chicory (Radicchio)</td><td>4–6</td><td>60–75</td><td>60–85</td><td>Every 3 weeks</td><td>Carrots, onions</td><td>—</td><td>2–4 weeks before</td><td>—</td><td>—</td></tr>
+                        <tr><td>Collards</td><td>4–6</td><td>50–80</td><td>60–85</td><td>Every 3 weeks</td><td>Tomatoes, onions</td><td></td><td>4 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Corn*</td><td>—</td><td>60–95</td><td>60–90</td><td>Every 2 weeks</td><td>Beans, squash, cucumbers</td><td></td><td>1 to 2 weeks after</td><td></td><td></td></tr>
+                        <tr><td>Cucumber</td><td>3–4</td><td>70–90</td><td>50–70</td><td>Every 2 weeks</td><td>Beans, corn, radishes</td><td></td><td>1 to 2 weeks after</td><td></td><td></td></tr>
+                        <tr><td>Daikon Radish</td><td>—</td><td>50–85</td><td>50–70</td><td>Every 3 weeks</td><td>Cucumbers, peas, lettuce</td><td>—</td><td>3–5 weeks before</td><td>—</td><td>—</td></tr>
+                        <tr><td>Eggplant</td><td>8–10</td><td>75–90</td><td>60–80</td><td></td><td>Beans, peppers</td><td></td><td>2 to 3 weeks after</td><td></td><td></td></tr>
+                        <tr><td>Endive</td><td>4–6</td><td>60–75</td><td>50–70</td><td>Every 3 weeks</td><td>Carrots, radishes</td><td></td><td>2 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Fava Beans</td><td>—</td><td>45–75</td><td>75–90</td><td>—</td><td>Potatoes, spinach, dill</td><td>—</td><td>4–6 weeks before</td><td>—</td><td>—</td></tr>
+                        <tr><td>Fennel</td><td>6–8</td><td>60–75</td><td>80–100</td><td></td><td>Dill, cilantro</td><td></td><td>on frost-free date</td><td></td><td></td></tr>
+                        <tr><td>Green Onions (Scallions)</td><td>—</td><td>50–85</td><td>50–70</td><td>Every 3 weeks</td><td>Carrots, lettuce, beets</td><td>—</td><td>3–4 weeks before</td><td>—</td><td>—</td></tr>
+                        <tr><td>Kale</td><td>4–6</td><td>50–80</td><td>50–70</td><td>Every 3 weeks</td><td>Beets, onions</td><td></td><td>4 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Kohlrabi*</td><td>4–6</td><td>50–80</td><td>50–70</td><td>Every 3 weeks</td><td>Beets, celery</td><td></td><td>4 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Leeks</td><td>8–10</td><td>60–75</td><td>100–130</td><td></td><td>Carrots, celery</td><td></td><td>2 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Lettuce</td><td>4–5</td><td>50–75</td><td>45–70</td><td>Every 2 weeks</td><td>Carrots, radishes, onions</td><td></td><td>3 to 4 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Lima Beans</td><td>—</td><td>65–85</td><td>65–80</td><td>Every 3 weeks</td><td>Corn, cucumbers</td><td>—</td><td>1 to 2 weeks after</td><td>—</td><td>—</td></tr>
+                        <tr><td>Mâche (Corn Salad)*</td><td>—</td><td>50–70</td><td>45–60</td><td>Every 2 weeks</td><td>Radishes, onions</td><td>—</td><td>4 to 6 weeks before</td><td>—</td><td>—</td></tr>
+                        <tr><td>Mustard Greens*</td><td>—</td><td>50–80</td><td>30–50</td><td>Every 2 weeks</td><td>Beets, dill</td><td>—</td><td>4 to 6 weeks before</td><td>—</td><td>—</td></tr>
+                        <tr><td>Okra*</td><td>4–6</td><td>75–95</td><td>50–70</td><td>Every 2 weeks</td><td>Peppers, sweet potatoes</td><td></td><td>2 to 4 weeks after</td><td></td><td></td></tr>
+                        <tr><td>Onions</td><td>8–10</td><td>60–75</td><td>90–120</td><td></td><td>Carrots, lettuce, tomatoes</td><td></td><td>4 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Peas*</td><td>—</td><td>40–75</td><td>55–75</td><td>Every 2 weeks</td><td>Carrots, radishes, turnips</td><td></td><td>4 to 6 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Peppers</td><td>8–10</td><td>75–90</td><td>60–90</td><td></td><td>Basil, onions, tomatoes</td><td></td><td>2 weeks after</td><td></td><td></td></tr>
+                        <tr><td>Potatoes*</td><td>—</td><td>—</td><td>70–100</td><td>Every 3 weeks</td><td>Beans, corn, cabbage</td><td></td><td>4 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Pumpkins</td><td>3–4</td><td>75–95</td><td>90–120</td><td></td><td>Corn, beans</td><td></td><td>2 weeks after</td><td></td><td></td></tr>
+                        <tr><td>Radishes*</td><td>—</td><td>50–85</td><td>25–40</td><td>Every 1–2 weeks</td><td>Lettuce, peas, carrots</td><td></td><td>4 to 6 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Rutabaga*</td><td>4–6</td><td>50–85</td><td>80–100</td><td>—</td><td>Peas, onions</td><td>—</td><td>6 to 8 weeks before</td><td>—</td><td>—</td></tr>
+                        <tr><td>Shallots (sets)</td><td>—</td><td>50–75</td><td>90–120</td><td>—</td><td>Carrots, beets, lettuce</td><td>—</td><td>4 weeks before</td><td>—</td><td>—</td></tr>
+                        <tr><td>Snap Peas</td><td>—</td><td>45–75</td><td>50–65</td><td>Every 2 weeks</td><td>Carrots, radishes</td><td>—</td><td>4 to 6 weeks before</td><td>—</td><td>—</td></tr>
+                        <tr><td>Spinach</td><td>4–6</td><td>50–75</td><td>40–60</td><td>Every 2 weeks</td><td>Strawberries, peas</td><td></td><td>3 to 6 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Summer Squash</td><td>3–4</td><td>70–95</td><td>45–60</td><td>Every 2 weeks</td><td>Corn, beans, nasturtium</td><td>—</td><td>2 weeks after</td><td>—</td><td>—</td></tr>
+                        <tr><td>Swiss Chard</td><td>5–6</td><td>50–85</td><td>50–70</td><td>Every 3 weeks</td><td>Onions, beans</td><td></td><td>2 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Tomatillos</td><td>6–8</td><td>70–85</td><td>70–90</td><td>—</td><td>Basil, tomatoes, marigolds</td><td>—</td><td>1 to 2 weeks after</td><td>—</td><td>—</td></tr>
+                        <tr><td>Tomatoes</td><td>6–8</td><td>70–85</td><td>60–90</td><td></td><td>Basil, marigolds, carrots</td><td></td><td>1 to 2 weeks after</td><td></td><td></td></tr>
+                        <tr><td>Winter Squash</td><td>3–4</td><td>70–95</td><td>90–120</td><td>—</td><td>Corn, beans</td><td>—</td><td>2 weeks after</td><td>—</td><td>—</td></tr>
+                        <tr><td>Zucchini</td><td>3–4</td><td>70–95</td><td>45–60</td><td>Every 2 weeks</td><td>Corn, beans, nasturtium</td><td>—</td><td>2 weeks after</td><td>—</td><td>—</td></tr>
+                    </tbody>
+                </table>
+                <!-- Spring Fruits Table -->
+                <table id="springFruitsTable">
+                    <thead>
+                        <tr>
+                            <th onclick="sortTable(0, this)">Seedlings</th>
+                            <th onclick="sortTable(1, this)">Weeks to Start Before Last Frost</th>
+                            <th onclick="sortTable(2, this)">Optimal Soil Temp (°F)</th>
+                            <th onclick="sortTable(3, this)">Days to Maturity</th>
+                            <th>Succession Tips</th>
+                            <th>Good Companions</th>
+                            <th>Start Seeds Indoors (From–To)</th>
+                            <th>Safe Transplant Timing (Relative to Last Frost)</th>
+                            <th>Transplant Outdoors (From–To)</th>
+                            <th>Estimated Harvest</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="section"><td colspan="10">Fruits</td></tr>
+                        <tr><td>Cantaloupe</td><td>3–4</td><td>75–95</td><td>75–100</td><td></td><td>Corn, nasturtium, radishes</td><td></td><td>2 weeks after</td><td></td><td></td></tr>
+                        <tr><td>Honeydew</td><td>3–4</td><td>75–95</td><td>80–105</td><td></td><td>Corn, nasturtium, radishes</td><td></td><td>2 weeks after</td><td></td><td></td></tr>
+                        <tr><td>Watermelon</td><td>3–4</td><td>75–95</td><td>70–100</td><td></td><td>Corn, nasturtium, radishes</td><td></td><td>2 weeks after</td><td></td><td></td></tr>
+                        <tr><td>Strawberries (from seed)</td><td>10–12</td><td>60–75</td><td>120+ (first fruit year 1)</td><td>Renew runners</td><td>Borage, spinach, beans</td><td></td><td>4 weeks before</td><td></td><td></td></tr>
+                    </tbody>
+                </table>
+                <!-- Spring Herbs Table -->
+                <table id="springHerbsTable">
+                    <thead>
+                        <tr>
+                            <th onclick="sortTable(0, this)">Seedlings</th>
+                            <th onclick="sortTable(1, this)">Weeks to Start Before Last Frost</th>
+                            <th onclick="sortTable(2, this)">Optimal Soil Temp (°F)</th>
+                            <th onclick="sortTable(3, this)">Days to Maturity</th>
+                            <th>Succession Tips</th>
+                            <th>Good Companions</th>
+                            <th>Start Seeds Indoors (From–To)</th>
+                            <th>Safe Transplant Timing (Relative to Last Frost)</th>
+                            <th>Transplant Outdoors (From–To)</th>
+                            <th>Estimated Harvest</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="section"><td colspan="10">Herbs</td></tr>
+                        <tr><td>Anise</td><td>6–8</td><td>60–75</td><td>90–120</td><td>—</td><td>Cilantro, coriander</td><td>—</td><td>on frost-free date</td><td>—</td><td>—</td></tr>
+                        <tr><td>Basil</td><td>6–8</td><td>70–85</td><td>60–80</td><td>Every 3 weeks</td><td>Tomatoes, peppers</td><td></td><td>1 week after</td><td></td><td></td></tr>
+                        <tr><td>Borage</td><td>4–6</td><td>65–75</td><td>60–80</td><td></td><td>Tomatoes, squash</td><td></td><td>on frost-free date</td><td></td><td></td></tr>
+                        <tr><td>Caraway</td><td>6–8</td><td>60–70</td><td>120–150</td><td>—</td><td>Peas, radishes</td><td>—</td><td>3–5 weeks before</td><td>—</td><td>—</td></tr>
+                        <tr><td>Chamomile</td><td>4–6</td><td>65–75</td><td>60–90</td><td></td><td>Cabbage, onions</td><td></td><td>1 week after</td><td></td><td></td></tr>
+                        <tr><td>Chervil</td><td>4–6</td><td>60–70</td><td>50–70</td><td>Every 3 weeks</td><td>Radishes, lettuce</td><td></td><td>2 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Chives</td><td>8–10</td><td>60–75</td><td>60–80</td><td></td><td>Carrots, tomatoes</td><td></td><td>on frost-free date</td><td></td><td></td></tr>
+                        <tr><td>Cilantro/Coriander*</td><td>4–6</td><td>55–75</td><td>45–70</td><td>Every 2–3 weeks</td><td>Spinach, anise</td><td></td><td>on frost-free date</td><td></td><td></td></tr>
+                        <tr><td>Dill</td><td>4–6</td><td>60–75</td><td>60–80</td><td>Every 3 weeks</td><td>Cabbage, cucumbers</td><td></td><td>2 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Epazote</td><td>6–8</td><td>70–85</td><td>60–80</td><td>—</td><td>Beans, corn</td><td>—</td><td>1–2 weeks after</td><td>—</td><td>—</td></tr>
+                        <tr><td>Fennel</td><td>6–8</td><td>60–75</td><td>80–100</td><td></td><td>Dill, cilantro</td><td></td><td>on frost-free date</td><td></td><td></td></tr>
+                        <tr><td>Hyssop</td><td>8–10</td><td>65–75</td><td>Perennial</td><td>—</td><td>Cabbage, grapes</td><td>—</td><td>on frost-free date</td><td>—</td><td>—</td></tr>
+                        <tr><td>Lovage</td><td>8–10</td><td>60–70</td><td>Perennial</td><td>—</td><td>Beans, potatoes</td><td>—</td><td>on frost-free date</td><td>—</td><td>—</td></tr>
+                        <tr><td>Lavender</td><td>10–12</td><td>65–75</td><td>Perennial</td><td></td><td>Rosemary, thyme</td><td></td><td>on frost-free date</td><td></td><td></td></tr>
+                        <tr><td>Lemon Balm</td><td>6–8</td><td>65–75</td><td>Perennial</td><td></td><td>Fruit trees, tomatoes</td><td></td><td>on frost-free date</td><td></td><td></td></tr>
+                        <tr><td>Marjoram (Sweet)</td><td>6–8</td><td>65–75</td><td>60–70</td><td>—</td><td>Tomatoes, peppers, basil</td><td>—</td><td>1 week after</td><td>—</td><td>—</td></tr>
+                        <tr><td>Mint</td><td>6–8</td><td>65–75</td><td>Perennial</td><td></td><td>Cabbage, tomatoes</td><td></td><td>on frost-free date</td><td></td><td></td></tr>
+                        <tr><td>Oregano</td><td>6–8</td><td>65–75</td><td>Perennial</td><td></td><td>Basil, peppers</td><td></td><td>on frost-free date</td><td></td><td></td></tr>
+                        <tr><td>Parsley</td><td>8–10</td><td>60–75</td><td>70–90</td><td>Every 3 weeks</td><td>Tomatoes, asparagus</td><td></td><td>2 to 3 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Rosemary</td><td>8–10</td><td>70–80</td><td>Perennial</td><td></td><td>Sage, beans</td><td></td><td>1 week after</td><td></td><td></td></tr>
+                        <tr><td>Sage</td><td>6–8</td><td>65–75</td><td>Perennial</td><td></td><td>Rosemary, cabbage</td><td></td><td>on frost-free date</td><td></td><td></td></tr>
+                        <tr><td>Salad Burnet</td><td>6–8</td><td>60–75</td><td>Perennial</td><td>—</td><td>Cucumbers, lettuce</td><td>—</td><td>3–4 weeks before</td><td>—</td><td>—</td></tr>
+                        <tr><td>Sorrel (French / Garden)</td><td>—</td><td>50–75</td><td>50–70</td><td>Every 4 weeks</td><td>Strawberries, cabbage</td><td>—</td><td>4 weeks before</td><td>—</td><td>—</td></tr>
+                        <tr><td>Summer Savory</td><td>4–6</td><td>65–75</td><td>60–70</td><td>—</td><td>Beans, onions</td><td>—</td><td>1 week after</td><td>—</td><td>—</td></tr>
+                        <tr><td>Tarragon</td><td>8–10</td><td>65–75</td><td>Perennial</td><td></td><td>Eggplant, artichoke</td><td></td><td>on frost-free date</td><td></td><td></td></tr>
+                        <tr><td>Thyme</td><td>8–10</td><td>65–75</td><td>Perennial</td><td></td><td>Cabbage, tomatoes</td><td></td><td>on frost-free date</td><td></td><td></td></tr>
+                    </tbody>
+                </table>
+                <!-- Spring Flowers Table -->
+                <table id="springFlowersTable">
+                    <thead>
+                        <tr>
+                            <th onclick="sortTable(0, this)">Seedlings</th>
+                            <th onclick="sortTable(1, this)">Weeks to Start Before Last Frost</th>
+                            <th onclick="sortTable(2, this)">Optimal Soil Temp (°F)</th>
+                            <th onclick="sortTable(3, this)">Days to Maturity</th>
+                            <th>Succession Tips</th>
+                            <th>Good Companions</th>
+                            <th>Start Seeds Indoors (From–To)</th>
+                            <th>Safe Transplant Timing (Relative to Last Frost)</th>
+                            <th>Transplant Outdoors (From–To)</th>
+                            <th>Estimated Harvest</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="section"><td colspan="10">Flowers</td></tr>
+                        <tr><td>Ageratum</td><td>6–8</td><td>70–80</td><td>60–80</td><td></td><td>Salvia, zinnias</td><td></td><td>on frost-free date</td><td></td><td></td></tr>
+                        <tr><td>Amaranth</td><td>6–8</td><td>70–85</td><td>70–90</td><td></td><td>Marigolds</td><td></td><td>1 week after</td><td></td><td></td></tr>
+                        <tr><td>Alyssum*</td><td>4–6</td><td>65–75</td><td>50–70</td><td>Every 3 weeks</td><td>Vegetables (pest control)</td><td></td><td>1 to 2 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Aster</td><td>6–8</td><td>65–75</td><td>90–120</td><td></td><td>Zinnias, cosmos</td><td></td><td>on frost-free date</td><td></td><td></td></tr>
+                        <tr><td>Calendula*</td><td>6–8</td><td>65–75</td><td>60–80</td><td>Every 3 weeks</td><td>Vegetables (pest control)</td><td>—</td><td>6 to 8 weeks before</td><td>—</td><td>—</td></tr>
+                        <tr><td>Celosia</td><td>6–8</td><td>70–80</td><td>70–90</td><td></td><td>Marigolds</td><td></td><td>1 week after</td><td></td><td></td></tr>
+                        <tr><td>Cosmos*</td><td>4–6</td><td>70–80</td><td>70–90</td><td></td><td>Marigolds, zinnias</td><td></td><td>on frost-free date</td><td></td><td></td></tr>
+                        <tr><td>Dahlia</td><td>4–6</td><td>70–80</td><td>90–120</td><td></td><td>Cannas, salvia</td><td></td><td>1 week after</td><td></td><td></td></tr>
+                        <tr><td>Marigold</td><td>4–6</td><td>70–80</td><td>50–70</td><td>Every 3 weeks</td><td>Tomatoes, peppers</td><td></td><td>1 week after</td><td></td><td></td></tr>
+                        <tr><td>Nasturtium*</td><td>3–4</td><td>65–75</td><td>50–70</td><td>Every 3 weeks</td><td>Cucumbers, squash</td><td></td><td>1 week after</td><td></td><td></td></tr>
+                        <tr><td>Petunia</td><td>10–12</td><td>70–80</td><td>70–90</td><td></td><td>Salvia, geraniums</td><td></td><td>on frost-free date</td><td></td><td></td></tr>
+                        <tr><td>Salvia</td><td>6–8</td><td>70–80</td><td>70–90</td><td></td><td>Petunias, marigolds</td><td></td><td>on frost-free date</td><td></td><td></td></tr>
+                        <tr><td>Sunflower*</td><td>2–4</td><td>70–85</td><td>70–100</td><td></td><td>Corn, cucumbers</td><td></td><td>on frost-free date</td><td></td><td></td></tr>
+                        <tr><td>Zinnia*</td><td>4–6</td><td>70–85</td><td>60–80</td><td>Every 3 weeks</td><td>Marigolds, cosmos</td><td></td><td>1 week after</td><td></td><td></td></tr>
+                        <tr><td>Snapdragon</td><td>8–10</td><td>65–75</td><td>90–120</td><td></td><td>Roses, salvia</td><td></td><td>on frost-free date</td><td></td><td></td></tr>
+                        <tr><td>Pansy/Viola</td><td>10–12</td><td>60–70</td><td>50–70</td><td>Every 3 weeks</td><td>Spring bulbs</td><td></td><td>4 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Coleus</td><td>8–10</td><td>70–85</td><td>60–80</td><td></td><td>Impatiens</td><td></td><td>1 week after</td><td></td><td></td></tr>
+                        <tr><td>Impatiens</td><td>8–10</td><td>70–80</td><td>60–80</td><td></td><td>Coleus, begonias</td><td></td><td>1 week after</td><td></td><td></td></tr>
+                    </tbody>
+                </table>
+                <!-- Fall All Table -->
+                <table id="fallAllTable">
+                    <thead>
+                        <tr>
+                            <th onclick="sortTable(0, this)">Seedlings</th>
+                            <th onclick="sortTable(1, this)">Weeks to Start Before Frost</th>
+                            <th onclick="sortTable(2, this)">Optimal Soil Temp (°F)</th>
+                            <th onclick="sortTable(3, this)">Days to Maturity</th>
+                            <th>Succession Tips</th>
+                            <th>Good Companions</th>
+                            <th>Start/Direct Sow (From–To)</th>
+                            <th>Safe Planting Timing (Relative to First Frost)</th>
+                            <th>Plant Outdoors (From–To)</th>
+                            <th>Estimated Harvest</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="section"><td colspan="10">Vegetables</td></tr>
+                        <tr><td>Arugula*</td><td>3–4</td><td>50–75</td><td>30–50</td><td>Every 2 weeks</td><td>Beets, carrots</td><td></td><td>3 to 4 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Beets*</td><td>6–8</td><td>50–85</td><td>50–70</td><td>Every 3 weeks</td><td>Lettuce, onions</td><td></td><td>6 to 8 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Bok Choy*</td><td>4–6</td><td>50–80</td><td>45–60</td><td>Every 2 weeks</td><td>Beans, celery</td><td></td><td>4 to 6 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Broccoli (transplant)</td><td>10–12</td><td>65–75</td><td>60–80</td><td>Every 3 weeks</td><td>Celery, onions, potatoes</td><td></td><td>6 to 8 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Brussels Sprouts (transplant)</td><td>12–14</td><td>65–75</td><td>90–120</td><td></td><td>Sage, dill</td><td></td><td>10 to 12 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Cabbage (transplant)</td><td>8–10</td><td>65–75</td><td>60–90</td><td>Every 3 weeks</td><td>Dill, celery, onions</td><td></td><td>6 to 8 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Carrots*</td><td>8–10</td><td>50–85</td><td>60–80</td><td>Every 3 weeks</td><td>Onions, leeks, rosemary</td><td></td><td>8 to 10 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Cauliflower (transplant)</td><td>10–12</td><td>65–75</td><td>60–80</td><td>Every 3 weeks</td><td>Celery, onions</td><td></td><td>6 to 8 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Claytonia (Miner's Lettuce)</td><td>—</td><td>45–70</td><td>40–60</td><td>Every 2–3 weeks</td><td>Radishes, carrots</td><td>—</td><td>4–6 weeks before</td><td>—</td><td>—</td></tr>
+                        <tr><td>Collards*</td><td>6–8</td><td>50–80</td><td>60–85</td><td>Every 3 weeks</td><td>Tomatoes, onions</td><td></td><td>6 to 8 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Endive*</td><td>4–6</td><td>60–75</td><td>50–70</td><td>Every 3 weeks</td><td>Carrots, radishes</td><td></td><td>4 to 6 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Garlic (cloves)*</td><td>—</td><td>—</td><td>240–270</td><td></td><td>Strawberries, tomatoes</td><td></td><td>4 to 6 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Kale*</td><td>6–8</td><td>50–80</td><td>50–70</td><td>Every 3 weeks</td><td>Beets, onions</td><td></td><td>6 to 8 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Kohlrabi*</td><td>6–8</td><td>50–80</td><td>50–70</td><td>Every 3 weeks</td><td>Beets, celery</td><td></td><td>6 to 8 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Komatsuna</td><td>4–6</td><td>50–80</td><td>35–50</td><td>Every 2–3 weeks</td><td>Peas, onions, lettuce</td><td>—</td><td>4–6 weeks before</td><td>—</td><td>—</td></tr>
+                        <tr><td>Lettuce*</td><td>4–8</td><td>50–75</td><td>45–70</td><td>Every 2 weeks</td><td>Carrots, radishes, onions</td><td></td><td>4 to 8 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Mâche (Corn Salad)*</td><td>4–6</td><td>50–70</td><td>45–60</td><td>Every 2 weeks</td><td>Radishes, onions</td><td></td><td>4 to 6 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Mizuna</td><td>3–5</td><td>50–75</td><td>35–50</td><td>Every 2–3 weeks</td><td>Lettuce, radishes</td><td>—</td><td>4 to 6 weeks before</td><td>—</td><td>—</td></tr>
+                        <tr><td>Mustard Greens*</td><td>4–6</td><td>50–80</td><td>30–50</td><td>Every 2 weeks</td><td>Beets, dill</td><td></td><td>4 to 6 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Peas*</td><td>6–8</td><td>40–75</td><td>55–75</td><td>Every 2 weeks</td><td>Carrots, radishes, turnips</td><td></td><td>6 to 8 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Pac Choi / Bok Choy (baby)</td><td>4–6</td><td>50–80</td><td>35–50</td><td>Every 2 weeks</td><td>Beans, celery, onions</td><td>—</td><td>4–6 weeks before</td><td>—</td><td>—</td></tr>
+                        <tr><td>Parsnips</td><td>—</td><td>50–75</td><td>100–130</td><td>—</td><td>Peas, radishes, onions</td><td>—</td><td>8–10 weeks before</td><td>—</td><td>—</td></tr>
+                        <tr><td>Radicchio</td><td>4–6</td><td>60–75</td><td>60–85</td><td>Every 3 weeks</td><td>Carrots, onions, beets</td><td>—</td><td>6–8 weeks before</td><td>—</td><td>—</td></tr>
+                        <tr><td>Radishes*</td><td>3–5</td><td>50–85</td><td>25–40</td><td>Every 1–2 weeks</td><td>Lettuce, peas, carrots</td><td></td><td>3 to 5 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Spinach*</td><td>4–6</td><td>50–75</td><td>40–60</td><td>Every 2 weeks</td><td>Strawberries, peas</td><td></td><td>4 to 6 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Swiss Chard*</td><td>6–8</td><td>50–85</td><td>50–70</td><td>Every 3 weeks</td><td>Onions, beans</td><td></td><td>6 to 8 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Tatsoi</td><td>4–6</td><td>50–75</td><td>40–55</td><td>Every 2–3 weeks</td><td>Peas, onions</td><td>—</td><td>4 to 6 weeks before</td><td>—</td><td>—</td></tr>
+                        <tr><td>Turnips*</td><td>6–8</td><td>50–85</td><td>40–60</td><td>Every 3 weeks</td><td>Peas, beans</td><td></td><td>6 to 8 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Watercress</td><td>—</td><td>45–70</td><td>40–60</td><td>Every 2–3 weeks</td><td>Lettuce, radishes</td><td>—</td><td>4–6 weeks before</td><td>—</td><td>—</td></tr>
+                        <tr class="section"><td colspan="10">Herbs</td></tr>
+                        <tr><td>Anise</td><td>6–8</td><td>60–75</td><td>90–120</td><td>—</td><td>Cilantro, coriander</td><td>—</td><td>on frost-free date</td><td>—</td><td>—</td></tr>
+                        <tr><td>Caraway</td><td>6–8</td><td>60–70</td><td>120–150</td><td>—</td><td>Peas, radishes</td><td>—</td><td>3–5 weeks before</td><td>—</td><td>—</td></tr>
+                        <tr><td>Catnip</td><td>6–8</td><td>65–75</td><td>Perennial</td><td>—</td><td>Roses, beets</td><td>—</td><td>6 to 8 weeks before</td><td>—</td><td>—</td></tr>
+                        <tr><td>Chervil</td><td>4–6</td><td>55–70</td><td>50–70</td><td>Every 3 weeks</td><td>Radishes, lettuce</td><td>—</td><td>4–6 weeks before</td><td>—</td><td>—</td></tr>
+                        <tr><td>Chives</td><td>8–10</td><td>60–75</td><td>60–80</td><td></td><td>Carrots, tomatoes</td><td></td><td>6 to 8 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Cilantro*</td><td>4–6</td><td>55–75</td><td>45–70</td><td>Every 2–3 weeks</td><td>Spinach, anise</td><td></td><td>4 to 6 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Coriander (for leaf – slow-bolt types)</td><td>4–6</td><td>50–75</td><td>40–60</td><td>Every 2–3 weeks</td><td>Spinach, anise</td><td>—</td><td>4–6 weeks before</td><td>—</td><td>—</td></tr>
+                        <tr><td>Dill*</td><td>4–6</td><td>60–75</td><td>60–80</td><td>Every 3 weeks</td><td>Cabbage, cucumbers</td><td></td><td>4 to 6 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Epazote</td><td>6–8</td><td>70–85</td><td>60–80</td><td>—</td><td>Beans, corn</td><td>—</td><td>1–2 weeks after</td><td>—</td><td>—</td></tr>
+                        <tr><td>Fennel (for leaf / bulb – small types)</td><td>6–8</td><td>60–75</td><td>80–100</td><td>—</td><td>Dill, cilantro</td><td>—</td><td>6–8 weeks before</td><td>—</td><td>—</td></tr>
+                        <tr><td>Hyssop</td><td>8–10</td><td>65–75</td><td>Perennial</td><td>—</td><td>Cabbage, grapes</td><td>—</td><td>on frost-free date</td><td>—</td><td>—</td></tr>
+                        <tr><td>Marjoram (Sweet)</td><td>6–8</td><td>65–75</td><td>60–70</td><td>—</td><td>Tomatoes, peppers, basil</td><td>—</td><td>1 week after</td><td>—</td><td>—</td></tr>
+                        <tr><td>Lemon Balm</td><td>6–8</td><td>65–75</td><td>Perennial</td><td>—</td><td>Fruit trees, tomatoes</td><td>—</td><td>6 to 8 weeks before</td><td>—</td><td>—</td></tr>
+                        <tr><td>Lovage</td><td>8–10</td><td>60–70</td><td>Perennial</td><td>—</td><td>Beans, potatoes</td><td>—</td><td>6 to 8 weeks before</td><td>—</td><td>—</td></tr>
+                        <tr><td>Parsley</td><td>8–10</td><td>60–75</td><td>70–90</td><td>Every 3 weeks</td><td>Tomatoes, asparagus</td><td></td><td>6 to 8 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Salad Burnet</td><td>6–8</td><td>60–75</td><td>Perennial</td><td>—</td><td>Cucumbers, lettuce</td><td>—</td><td>3–4 weeks before</td><td>—</td><td>—</td></tr>
+                        <tr><td>Sorrel (French / Garden)</td><td>—</td><td>50–75</td><td>50–70</td><td>Every 4 weeks</td><td>Strawberries, cabbage</td><td>—</td><td>4 weeks before</td><td>—</td><td>—</td></tr>
+                        <tr><td>Winter Savory</td><td>8–10</td><td>65–75</td><td>Perennial</td><td>—</td><td>Beans, onions</td><td>—</td><td>on frost-free date or 6–8 weeks before fall</td><td>—</td><td>—</td></tr>
+                        <tr class="section"><td colspan="10">Cool-Season Flowers</td></tr>
+                        <tr><td>Calendula*</td><td>6–8</td><td>65–75</td><td>60–80</td><td>Every 3 weeks</td><td>Vegetables (pest control)</td><td></td><td>6 to 8 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Pansies/Violas</td><td>10–12</td><td>60–70</td><td>50–70</td><td>Every 3 weeks</td><td>Spring bulbs</td><td></td><td>8 to 10 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Snapdragons</td><td>8–10</td><td>65–75</td><td>90–120</td><td></td><td>Roses, salvia</td><td></td><td>6 to 8 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Sweet Peas*</td><td>6–8</td><td>55–65</td><td>70–90</td><td>Every 3 weeks</td><td>Lettuce, radishes</td><td></td><td>6 to 8 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Stock</td><td>6–8</td><td>65–75</td><td>70–90</td><td></td><td>Snapdragons</td><td></td><td>6 to 8 weeks before</td><td></td><td></td></tr>
+                    </tbody>
+                </table>
+                <!-- Fall Vegetables Table -->
+                <table id="fallVegetablesTable">
+                    <thead>
+                        <tr>
+                            <th onclick="sortTable(0, this)">Seedlings</th>
+                            <th onclick="sortTable(1, this)">Weeks to Start Before Frost</th>
+                            <th onclick="sortTable(2, this)">Optimal Soil Temp (°F)</th>
+                            <th onclick="sortTable(3, this)">Days to Maturity</th>
+                            <th>Succession Tips</th>
+                            <th>Good Companions</th>
+                            <th>Start/Direct Sow (From–To)</th>
+                            <th>Safe Planting Timing (Relative to First Frost)</th>
+                            <th>Plant Outdoors (From–To)</th>
+                            <th>Estimated Harvest</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="section"><td colspan="10">Vegetables</td></tr>
+                        <tr><td>Arugula*</td><td>3–4</td><td>50–75</td><td>30–50</td><td>Every 2 weeks</td><td>Beets, carrots</td><td></td><td>3 to 4 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Beets*</td><td>6–8</td><td>50–85</td><td>50–70</td><td>Every 3 weeks</td><td>Lettuce, onions</td><td></td><td>6 to 8 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Bok Choy*</td><td>4–6</td><td>50–80</td><td>45–60</td><td>Every 2 weeks</td><td>Beans, celery</td><td></td><td>4 to 6 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Broccoli (transplant)</td><td>10–12</td><td>65–75</td><td>60–80</td><td>Every 3 weeks</td><td>Celery, onions, potatoes</td><td></td><td>6 to 8 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Brussels Sprouts (transplant)</td><td>12–14</td><td>65–75</td><td>90–120</td><td></td><td>Sage, dill</td><td></td><td>10 to 12 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Cabbage (transplant)</td><td>8–10</td><td>65–75</td><td>60–90</td><td>Every 3 weeks</td><td>Dill, celery, onions</td><td></td><td>6 to 8 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Carrots*</td><td>8–10</td><td>50–85</td><td>60–80</td><td>Every 3 weeks</td><td>Onions, leeks, rosemary</td><td></td><td>8 to 10 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Cauliflower (transplant)</td><td>10–12</td><td>65–75</td><td>60–80</td><td>Every 3 weeks</td><td>Celery, onions</td><td></td><td>6 to 8 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Claytonia (Miner's Lettuce)</td><td>—</td><td>45–70</td><td>40–60</td><td>Every 2–3 weeks</td><td>Radishes, carrots</td><td>—</td><td>4–6 weeks before</td><td>—</td><td>—</td></tr>
+                        <tr><td>Collards*</td><td>6–8</td><td>50–80</td><td>60–85</td><td>Every 3 weeks</td><td>Tomatoes, onions</td><td></td><td>6 to 8 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Endive*</td><td>4–6</td><td>60–75</td><td>50–70</td><td>Every 3 weeks</td><td>Carrots, radishes</td><td></td><td>4 to 6 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Garlic (cloves)*</td><td>—</td><td>—</td><td>240–270</td><td></td><td>Strawberries, tomatoes</td><td></td><td>4 to 6 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Kale*</td><td>6–8</td><td>50–80</td><td>50–70</td><td>Every 3 weeks</td><td>Beets, onions</td><td></td><td>6 to 8 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Kohlrabi*</td><td>6–8</td><td>50–80</td><td>50–70</td><td>Every 3 weeks</td><td>Beets, celery</td><td></td><td>6 to 8 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Komatsuna</td><td>4–6</td><td>50–80</td><td>35–50</td><td>Every 2–3 weeks</td><td>Peas, onions, lettuce</td><td>—</td><td>4–6 weeks before</td><td>—</td><td>—</td></tr>
+                        <tr><td>Lettuce*</td><td>4–8</td><td>50–75</td><td>45–70</td><td>Every 2 weeks</td><td>Carrots, radishes, onions</td><td></td><td>4 to 8 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Mâche (Corn Salad)*</td><td>4–6</td><td>50–70</td><td>45–60</td><td>Every 2 weeks</td><td>Radishes, onions</td><td></td><td>4 to 6 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Mizuna</td><td>3–5</td><td>50–75</td><td>35–50</td><td>Every 2–3 weeks</td><td>Lettuce, radishes</td><td>—</td><td>4 to 6 weeks before</td><td>—</td><td>—</td></tr>
+                        <tr><td>Mustard Greens*</td><td>4–6</td><td>50–80</td><td>30–50</td><td>Every 2 weeks</td><td>Beets, dill</td><td></td><td>4 to 6 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Peas*</td><td>6–8</td><td>40–75</td><td>55–75</td><td>Every 2 weeks</td><td>Carrots, radishes, turnips</td><td></td><td>6 to 8 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Pac Choi / Bok Choy (baby)</td><td>4–6</td><td>50–80</td><td>35–50</td><td>Every 2 weeks</td><td>Beans, celery, onions</td><td>—</td><td>4–6 weeks before</td><td>—</td><td>—</td></tr>
+                        <tr><td>Parsnips</td><td>—</td><td>50–75</td><td>100–130</td><td>—</td><td>Peas, radishes, onions</td><td>—</td><td>8–10 weeks before</td><td>—</td><td>—</td></tr>
+                        <tr><td>Radicchio</td><td>4–6</td><td>60–75</td><td>60–85</td><td>Every 3 weeks</td><td>Carrots, onions, beets</td><td>—</td><td>6–8 weeks before</td><td>—</td><td>—</td></tr>
+                        <tr><td>Radishes*</td><td>3–5</td><td>50–85</td><td>25–40</td><td>Every 1–2 weeks</td><td>Lettuce, peas, carrots</td><td></td><td>3 to 5 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Rutabaga*</td><td>6–8</td><td>50–85</td><td>80–100</td><td>—</td><td>Peas, onions</td><td>—</td><td>6 to 8 weeks before</td><td>—</td><td>—</td></tr>
+                        <tr><td>Spinach*</td><td>4–6</td><td>50–75</td><td>40–60</td><td>Every 2 weeks</td><td>Strawberries, peas</td><td></td><td>4 to 6 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Swiss Chard*</td><td>6–8</td><td>50–85</td><td>50–70</td><td>Every 3 weeks</td><td>Onions, beans</td><td></td><td>6 to 8 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Tatsoi</td><td>4–6</td><td>50–75</td><td>40–55</td><td>Every 2–3 weeks</td><td>Peas, onions</td><td>—</td><td>4 to 6 weeks before</td><td>—</td><td>—</td></tr>
+                        <tr><td>Turnips*</td><td>6–8</td><td>50–85</td><td>40–60</td><td>Every 3 weeks</td><td>Peas, beans</td><td></td><td>6 to 8 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Watercress</td><td>—</td><td>45–70</td><td>40–60</td><td>Every 2–3 weeks</td><td>Lettuce, radishes</td><td>—</td><td>4–6 weeks before</td><td>—</td><td>—</td></tr>
+                    </tbody>
+                </table>
+                <!-- Fall Herbs Table -->
+                <table id="fallHerbsTable">
+                    <thead>
+                        <tr>
+                            <th onclick="sortTable(0, this)">Seedlings</th>
+                            <th onclick="sortTable(1, this)">Weeks to Start Before Frost</th>
+                            <th onclick="sortTable(2, this)">Optimal Soil Temp (°F)</th>
+                            <th onclick="sortTable(3, this)">Days to Maturity</th>
+                            <th>Succession Tips</th>
+                            <th>Good Companions</th>
+                            <th>Start/Direct Sow (From–To)</th>
+                            <th>Safe Planting Timing (Relative to First Frost)</th>
+                            <th>Plant Outdoors (From–To)</th>
+                            <th>Estimated Harvest</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="section"><td colspan="10">Herbs</td></tr>
+                        <tr><td>Anise</td><td>6–8</td><td>60–75</td><td>90–120</td><td>—</td><td>Cilantro, coriander</td><td>—</td><td>on frost-free date</td><td>—</td><td>—</td></tr>
+                        <tr><td>Caraway</td><td>6–8</td><td>60–70</td><td>120–150</td><td>—</td><td>Peas, radishes</td><td>—</td><td>3–5 weeks before</td><td>—</td><td>—</td></tr>
+                        <tr><td>Catnip</td><td>6–8</td><td>65–75</td><td>Perennial</td><td>—</td><td>Roses, beets</td><td>—</td><td>6 to 8 weeks before</td><td>—</td><td>—</td></tr>
+                        <tr><td>Chervil</td><td>4–6</td><td>55–70</td><td>50–70</td><td>Every 3 weeks</td><td>Radishes, lettuce</td><td>—</td><td>4–6 weeks before</td><td>—</td><td>—</td></tr>
+                        <tr><td>Chives</td><td>8–10</td><td>60–75</td><td>60–80</td><td></td><td>Carrots, tomatoes</td><td></td><td>6 to 8 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Cilantro*</td><td>4–6</td><td>55–75</td><td>45–70</td><td>Every 2–3 weeks</td><td>Spinach, anise</td><td></td><td>4 to 6 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Coriander (for leaf – slow-bolt types)</td><td>4–6</td><td>50–75</td><td>40–60</td><td>Every 2–3 weeks</td><td>Spinach, anise</td><td>—</td><td>4–6 weeks before</td><td>—</td><td>—</td></tr>
+                        <tr><td>Dill*</td><td>4–6</td><td>60–75</td><td>60–80</td><td>Every 3 weeks</td><td>Cabbage, cucumbers</td><td></td><td>4 to 6 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Epazote</td><td>6–8</td><td>70–85</td><td>60–80</td><td>—</td><td>Beans, corn</td><td>—</td><td>1–2 weeks after</td><td>—</td><td>—</td></tr>
+                        <tr><td>Fennel (for leaf / bulb – small types)</td><td>6–8</td><td>60–75</td><td>80–100</td><td>—</td><td>Dill, cilantro</td><td>—</td><td>6–8 weeks before</td><td>—</td><td>—</td></tr>
+                        <tr><td>Hyssop</td><td>8–10</td><td>65–75</td><td>Perennial</td><td>—</td><td>Cabbage, grapes</td><td>—</td><td>on frost-free date</td><td>—</td><td>—</td></tr>
+                        <tr><td>Marjoram (Sweet)</td><td>6–8</td><td>65–75</td><td>60–70</td><td>—</td><td>Tomatoes, peppers, basil</td><td>—</td><td>1 week after</td><td>—</td><td>—</td></tr>
+                        <tr><td>Lemon Balm</td><td>6–8</td><td>65–75</td><td>Perennial</td><td>—</td><td>Fruit trees, tomatoes</td><td>—</td><td>6 to 8 weeks before</td><td>—</td><td>—</td></tr>
+                        <tr><td>Lovage</td><td>8–10</td><td>60–70</td><td>Perennial</td><td>—</td><td>Beans, potatoes</td><td>—</td><td>6 to 8 weeks before</td><td>—</td><td>—</td></tr>
+                        <tr><td>Parsley</td><td>8–10</td><td>60–75</td><td>70–90</td><td>Every 3 weeks</td><td>Tomatoes, asparagus</td><td></td><td>6 to 8 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Salad Burnet</td><td>6–8</td><td>60–75</td><td>Perennial</td><td>—</td><td>Cucumbers, lettuce</td><td>—</td><td>3–4 weeks before</td><td>—</td><td>—</td></tr>
+                        <tr><td>Sorrel (French / Garden)</td><td>—</td><td>50–75</td><td>50–70</td><td>Every 4 weeks</td><td>Strawberries, cabbage</td><td>—</td><td>4 weeks before</td><td>—</td><td>—</td></tr>
+                        <tr><td>Winter Savory</td><td>8–10</td><td>65–75</td><td>Perennial</td><td>—</td><td>Beans, onions</td><td>—</td><td>on frost-free date or 6–8 weeks before fall</td><td>—</td><td>—</td></tr>
+                    </tbody>
+                </table>
+                <!-- Fall Flowers Table -->
+                <table id="fallFlowersTable">
+                    <thead>
+                        <tr>
+                            <th onclick="sortTable(0, this)">Seedlings</th>
+                            <th onclick="sortTable(1, this)">Weeks to start Before Frost</th>
+                            <th onclick="sortTable(2, this)">Optimal Soil Temp (°F)</th>
+                            <th onclick="sortTable(3, this)">Days to Maturity</th>
+                            <th>Succession Tips</th>
+                            <th>Good Companions</th>
+                            <th>Start/Direct Sow (From–To)</th>
+                            <th>Safe Planting Timing (Relative to First Frost)</th>
+                            <th>Plant Outdoors (From–To)</th>
+                            <th>Estimated Harvest</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="section"><td colspan="10">Cool-Season Flowers</td></tr>
+                        <tr><td>Calendula*</td><td>6–8</td><td>65–75</td><td>60–80</td><td>Every 3 weeks</td><td>Vegetables (pest control)</td><td></td><td>6 to 8 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Pansies/Violas</td><td>10–12</td><td>60–70</td><td>50–70</td><td>Every 3 weeks</td><td>Spring bulbs</td><td></td><td>8 to 10 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Snapdragons</td><td>8–10</td><td>65–75</td><td>90–120</td><td></td><td>Roses, salvia</td><td></td><td>6 to 8 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Sweet Peas*</td><td>6–8</td><td>55–65</td><td>70–90</td><td>Every 3 weeks</td><td>Lettuce, radishes</td><td></td><td>6 to 8 weeks before</td><td></td><td></td></tr>
+                        <tr><td>Stock</td><td>6–8</td><td>65–75</td><td>70–90</td><td></td><td>Snapdragons</td><td></td><td>6 to 8 weeks before</td><td></td><td></td></tr>
+                    </tbody>
+                </table>
+              </div></div>
+              
+              <!-- ================= CALCULATOR ================= -->
+              <div id="calculator" class="tab-content active">
+              
+                <div id="notes"
+                  style="background: var(--surface); padding: 15px; border-radius: 12px; border: 1px solid var(--primary); margin-top: 30px; font-style: italic;">
+                  <p id="springNotes" style="display: block;">
+                    * Usually direct-sown or planted as sets/crowns. Days to Maturity is from transplant (or direct sow for *).
+                    Estimated Harvest is approximate from transplant date. Optimal Soil Temp (°F) is for germination (use heat mats
+                    indoors if needed). Succession tips help extend your harvest. Happy Growing From PerpetualGenesis!
+                  </p>
+                  <p id="fallNotes" style="display: none;">
+                    * Direct-sow recommended. Many hardy crops survive light frost—extend with row covers! Estimated Harvest is
+                    approximate from planting. Happy Growing from PerpetualGenesis!
+                  </p>
+                </div>
+              
+              </div>            
+            </div>
+              <!-- ================= MY GARDEN ================= -->
+<div id="mygarden" class="tab-content">
+  <div id="myGardenContent">
+
+    <div class="dashboard-header">
+      <h2 style="color:var(--accent);">My Garden Dashboard</h2>
+      <p>Organize your plantings into separate plans • All data saved in your browser</p>
+    </div>
+
+    <div class="plan-selector">
+      <div class="plan-tabs" id="myGardenPlanTabs"></div>
+      <div class="plan-actions">
+        <input type="text" id="newPlanName" placeholder="New plan name..."
+          style="padding:10px; background:var(--bg); border:1px solid var(--primary); border-radius:6px; color:var(--primary);">
+        <button onclick="addNewPlan('mygarden')">+ New Plan</button>
+        <button class="clear-btn" onclick="deleteCurrentPlan('mygarden')">Delete Current Plan</button>
+      </div>
+    </div>
+
+    <input type="text" id="myGardenSearch" onkeyup="filterMyGarden()" placeholder="Search your garden crops...">
+    <div id="favoritesGrid" class="crops-grid"></div>
+
+    <div style="text-align:center; margin-top:30px;">
+      <button class="clear-btn" onclick="clearAllPlans()" style="padding:15px 30px; font-size:1.1em;">
+        Clear All Plans & Plantings
+      </button>
+                  </div>
+              
+                </div>
+              
+              </div>
+              <!-- ================= TIMELINE ================= -->
+              <div id="timeline" class="tab-content">
+                <div id="timelineContent">
+              
+                  <div class="dashboard-header">
+                    <h2 style="color:var(--accent);">Perpetual Harvest Timeline</h2>
+                    <p>Visual timeline of your growing season and harvest flow</p>
+                  </div>
+              
+                  <div class="plan-selector">
+                    <div class="plan-tabs" id="timelinePlanTabs"></div>
+                    <div class="plan-actions">
+                    <!--<input type="text" id="newPlanNameTimeline" placeholder="New plan name..."
+                        style="padding:10px; background:var(--bg); border:1px solid var(--primary); border-radius:6px; color:var(--primary);">
+                      <button onclick="addNewPlan('timeline')">+ New Plan</button>
+                      <button class="clear-btn" onclick="deleteCurrentPlan('timeline')">Delete Current Plan</button> -->
+                    </div>
+                  </div>
+              
+                  <div class="legend">
+                    <div class="legend-item">
+                      <div class="legend-color" style="background:#6a5acd;"></div>Start Indoors
+                    </div>
+                    <div class="legend-item">
+                      <div class="legend-color" style="background:#32cd32;"></div>Transplant Out
+                    </div>
+                    <div class="legend-item">
+                      <div class="legend-color" style="background:#ffa500;"></div>Harvest
+                    </div>
+                    <div class="legend-item">
+                      <div class="legend-color" style="background:rgba(169,169,169,0.5);"></div>Growing Period
+                    </div>
+                  </div>
+              
+                  <div class="timeline-wrapper">
+                    <div class="timeline-grid">
+                      <div class="month-labels" id="monthLabels"></div>
+                      <div class="timeline-rows" id="timelineRows"></div>
+                      
+                    </div>
+                  </div>
+              
+                </div>
+                <div class="perpetual-tips" id="perpetualTips">
+                  <strong>Perpetual Harvest Tips:</strong>
+                  Crops with "Every X weeks" in succession tips are ideal for staggered planting.
+                  Overlapping bars show continuous availability!
+                </div>
+              
+                <div style="text-align:center; margin-top:20px;">
+                  <button onclick="renderTimeline()">Refresh Timeline</button>
+                </div>
+              
+              </div>
+              
+              
+              
+              <!-- ================= PERPETUAL ================= -->
+<div id="perpetual" class="tab-content">
+    <div style="padding: 20px;">
+        <div class="dashboard-header">
+            <h2 style="text-align:center; color:var(--accent);">
+                Perpetual Harvest Planner (365 Days)
+            </h2>
+            <p style="text-align:center; max-width:800px; margin:0 auto 20px;">
+                Build a rolling, succession-based planting plan for continuous harvests.
+            </p>
+        </div>
+
+        <div class="controls" style="max-width: 700px; margin: 0 auto 30px;">
+                 <!-- Plan selector: mirrors My Garden plans -->
+        <div class="plan-selector">
+            <div class="plan-tabs" id="perpetualPlanTabs"></div>
+        </div>
+   
+
+                  <div class="controls" style="max-width: 700px; margin: 0 auto 30px;">
+                    <div>
+                      <label>Select Crops (tap to choose):</label>
+                      <div id="perpetualCropList"
+                        style="max-height: 200px; overflow-y: auto; background: var(--surface); padding: 10px; border-radius: 8px; border: 1px solid var(--primary);">
+                        <!-- Filled dynamically by renderPerpetual() -->
+                      </div>
+                    </div>
+              
+                    <div>
+                      <label for="successionDays">Days Between Successions:</label>
+                      <input type="number" id="successionDays" min="7" max="60" value="14" step="1">
+                    </div>
+              
+                    <div>
+                      <label for="successionCount">Number of Successions per Crop:</label>
+                      <input type="number" id="successionCount" min="1" max="30" value="6" step="1">
+                    </div>
+              
+                    <div>
+                      <label for="successionsPerRow">Successions per Row (for layout):</label>
+                      <input type="number" id="successionsPerRow" min="1" max="10" value="3" step="1">
+                    </div>
+              
+                    <div>
+                      <label for="perpetualStartDate">Planning Start Date:</label>
+                      <input type="date" id="perpetualStartDate">
+                    </div>
+              
+                    <div style="grid-column: 1 / -1; text-align: center; margin-top: 10px;">
+                      <label style="font-weight: normal; cursor: pointer;">
+                        <input type="checkbox" id="showGapFillers" checked>
+                        Show gap-filling suggestions
+                      </label>
+                    </div>
+
+                    <div style="grid-column: 1 / -1; margin-top: 10px;">
+                      <label style="cursor:pointer;">
+                        <input type="checkbox" id="perpetualApplyToMyGarden">
+                        Also add these successions to My Garden plan
+                      </label>
+                    </div>
+
+              
+                    <div style="grid-column: 1 / -1; text-align: center; margin-top: 20px;">
+                      <button class="primary" onclick="buildPerpetualPlan()" style="padding: 16px 40px; font-size: 1.2em;">
+                        Build Perpetual Plan
+                      </button>
+                    </div>
+                  </div>
+
+                  <div style="grid-column: 1 / -1; margin-top: 10px; text-align:center;">
+                    <button type="button" onclick="clearCurrentPerpetualPlan()">
+                      Delete Perpetual Plan for this My Garden plan
+                    </button>
+                  </div>
+              
+                  <div id="perpetualTimeline" class="perpetual-timeline" style="gap: 20px;">
+                    <!-- Succession blocks appear here in wrapped rows -->
+                  </div>
+                  </div>
+                  </div>
+
+                </div>             
+<!-- ================= SPACING & YIELD CALCULATOR ================= -->
+<div id="spacing" class="tab-content">
+  <div style="padding: 20px;">
+
+    <div class="dashboard-header">
+      <h2 style="color:var(--accent);">Spacing & Yield Calculator</h2>
+      <p>Plan your garden layout and estimate how many seeds/plants you need + expected harvest</p>
+    </div>
+
+    <div class="spacing-controls">
+      <div>
+        <label for="spacingCrop">Crop:</label>
+        <select id="spacingCrop">
+          <option value="">Select a crop...</option>
+        </select>
+      </div>
+
+<div>
+    <label>Planting Style:</label>
+    <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
+      <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+        <input type="radio" name="style" value="sqft" checked>
+        <span><strong>Intensive / Square-Foot Style</strong> — raised beds, square-foot gardening, maximized density</span>
+      </label>
+      <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+        <input type="radio" name="style" value="rows">
+        <span><strong>Traditional Row Style</strong> — long rows with wider spacing between them</span>
+      </label>
+    </div>
+    <p style="font-size: 0.9em; color: var(--text-secondary); margin-top: 8px;">
+      Choose how you prefer to plant — most home gardeners use Intensive style for higher yields in small spaces.
+    </p>
+  </div>
+
+      <div id="sqftInputs" class="input-group">
+        <div>
+          <label for="bedWidth">Bed Width (feet):</label>
+          <input type="number" id="bedWidth" min="1" value="4" step="0.5">
+        </div>
+        <div>
+          <label for="bedLength">Bed Length (feet):</label>
+          <input type="number" id="bedLength" min="1" value="8" step="0.5">
+        </div>
+      </div>
+
+      <div id="rowInputs" class="input-group" style="display:none;">
+        <div>
+          <label for="rowLength">Row Length (feet):</label>
+          <input type="number" id="rowLength" min="1" value="20" step="1">
+        </div>
+        <div>
+          <label for="numRows">Number of Rows:</label>
+          <input type="number" id="numRows" min="1" value="3" step="1">
+        </div>
+      </div>
+
+      <div style="text-align:center;">
+        <button onclick="calculateSpacing()">Calculate</button>
+      </div>
+    </div>
+
+    <div id="spacingResult" class="spacing-result" style="display:none;">
+      <!-- Results appear here -->
+    </div>
+    </div>
+
+  </div>
+</div>
+<div id="layout" class="tab-content">
+  <div style="padding:20px;">
+    <div class="dashboard-header">
+      <h2 style="color:var(--accent);">Property / Farm / Garden Layout</h2>
+      <p>Place beds/structures on your property map, then edit each bed’s planting squares.</p>
+    </div>
+
+
+
+    <!-- Bed defaults / build controls -->
+<div class="controls" style="max-width:900px; margin:0 auto 20px;">
+  <div style="display:grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap:12px;">
+
+    <div>
+      <label># of Beds</label>
+      <input id="layoutBedCount" type="number" min="0" max="50" step="1" value="0">
+    </div>
+
+    <div>
+      <label>Style</label>
+      <select id="layoutStyle">
+        <option value="sqft">Square Foot</option>
+        <option value="rows">Rows (basic)</option>
+      </select>
+    </div>
+
+    <div style="display:flex; align-items:flex-end; gap:10px;">
+      <button onclick="Layout.render()">Build / Refresh</button>
+      <button onclick="Layout.save()">Save</button>
+      <button class="clear-btn" onclick="Layout.print()">Print</button>
+    </div>
+
+  </div>
+
+  <div style="margin-top:10px; display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+    <label style="display:flex; gap:8px; align-items:center;">
+      <input type="checkbox" id="layoutUseCurrentPlan" checked>
+      Use current My Garden plan
+    </label>
+
+    <label style="display:flex; gap:8px; align-items:center;">
+      <input type="checkbox" id="layoutShowEmpty" checked>
+      Show empty squares
+    </label>
+
+    <label style="display:flex; gap:8px; align-items:center;">
+      <input type="checkbox" id="layoutIncludeHarvested" checked>
+      Include harvested
+    </label>
+  </div>
+</div>
+
+
+
+    <div id="layoutSummary" style="max-width:1100px; margin:0 auto 14px;"></div>
+
+    <!-- ONE unified workspace: Property map + Bed crop editor -->
+    <div style="max-width:1100px; margin:0 auto; display:grid; grid-template-columns: 1.4fr 1fr; gap:14px;">
+      <!-- Property / Farm map -->
+      <div class="property-layout-section" style="margin-top:0;">
+        <h3 style="margin:0 0 6px;">Property Map</h3>
+
+        <div class="property-layout-controls">
+          <label>
+            Property width (ft):
+            <input type="number" id="propertyWidth" min="10" max="1000" value="80">
+          </label>
+
+          <label>
+            Property length (ft):
+            <input type="number" id="propertyLength" min="10" max="1000" value="120">
+          </label>
+
+          <label>
+            Scale:
+            <select id="propertyScale">
+              <option value="1">1 ft per grid unit</option>
+              <option value="2" selected>2 ft per grid unit</option>
+              <option value="5">5 ft per grid unit</option>
+            </select>
+          </label>
+
+          <label>
+            Snap:
+            <select id="propertySnap">
+              <option value="1" selected>1 unit</option>
+              <option value="2">2 units</option>
+              <option value="4">4 units</option>
+            </select>
+          </label>
+        </div>
+
+        <div id="propertyViewport" class="property-viewport">
+          <div id="propertyCanvas" class="property-canvas"></div>
+        </div>
+
+        <div id="bedOffsetControls" class="bed-offset-controls"></div>
+      </div>
+
+      <!-- Crop editor for selected bed -->
+      <div>
+        <h3 style="margin:0 0 6px;">Selected Bed Planting Squares</h3>
+        <div id="selectedBedPanel" class="selected-bed-panel"></div>
+      </div>
+    </div>
+
+    <!-- IMPORTANT: keep this element for JS compatibility, but hidden -->
+    <div id="layoutGridWrap" style="display:none;">
+      <div id="layoutGrid"></div>
+    </div>
+  </div>
+</div>
+
+
+            
+              </div>
+              <div id="help" class="tab-content">
+                <div class="help-content">
+                  <button type="button" type="button" onclick="exportAppDataEncrypted()">🔐 Download Secure Backup</button><input
+                    type="file" accept=".pgbackup" onchange="importEncryptedAppData(this.files[0])" />
+                  <p class="helper-text">“Secure backups are protected by a passphrase.
+                    If the passphrase is lost, the backup CANNOT be restored!!!” “All data is stored locally on the user’s device.
+                    Secure backups are encrypted using industry-standard encryption and can only be restored with the user’s
+                    passphrase.”
+                    Download a recovery file to keep a backup or move your data to another device.
+                  </p>
+              
+              
+                  <h1 style="text-align:center; color:var(--accent);">Help & About</h1>
+                  <p>This tool is designed to help you plan indoor seed starting and outdoor transplant timing based on your local
+                    frost dates and growing method. It is built for practical use — not perfection.</p>
+              
+                  <h2>Calculator Tab</h2>
+                  <p>The core of the tool. Use it to:</p>
+                  <ul>
+                    <li>Select season (Spring or Fall)</li>
+                    <li>Choose crop category</li>
+                    <li>Pick growing method (Outdoor, Row Covers, or Greenhouse)</li>
+                    <li>Enter your last spring or first fall frost date (MM/DD/YYYY)</li>
+                    <li>Click <strong>Calculate Dates</strong> to fill in personalized start/transplant/harvest windows</li>
+                    <li>Use <strong>Reset</strong> to clear all calculated dates and the frost date field</li>
+                    <li>Click <strong>+ Add</strong> on any crop row to save it to My Garden</li>
+                  </ul>
+                  <p>Dates are estimates based on standard horticultural data adjusted for your method.</p>
+              
+                  <h2>My Garden Tab</h2>
+                  <p>Your personal dashboard. Features:</p>
+                  <ul>
+                    <li>Multiple plans (create, rename, reorder, delete)</li>
+                    <li>Each added crop shows its original settings and calculated dates</li>
+                    <li>Track progress: Seeds Started • Transplanted • Harvested</li>
+                    <li>Add personal notes per planting</li>
+                    <li>Remove individual plantings or clear everything</li>
+                  </ul>
+                  <p>All data is saved in your browser (localStorage). Nothing is sent online.</p>
+              
+                  <h2>Timeline Tab</h2>
+                  <p>Visual timeline of your growing season and harvest flow:</p>
+                  <ul>
+                    <li>Bars show indoor starting, transplant, growing, and harvest periods</li>
+                    <li>Progress markers appear when you mark steps complete in My Garden</li>
+                    <li>Succession tips are highlighted below for continuous harvest crops</li>
+                    <li>Click Refresh Timeline if changes aren't showing</li>
+                  </ul>
+              
+                  <h2>Spacing & Yield Calculator Tab</h2>
+                  <p>Practical planning tool:</p>
+                  <ul>
+                    <li>Select a crop</li>
+                    <li>Choose Square Foot Gardening or Traditional Rows</li>
+                    <li>Enter bed or row dimensions</li>
+                    <li>Get number of plants/seeds needed (+20% extra) and estimated yield range</li>
+                  </ul>
+                  <p>Yields are averages — real results vary widely.</p>
+              
+                  <div class="disclaimer">
+                    <strong>Disclaimer</strong><br><br>
+                    This calculator provides estimates based on general horticultural data, published spacing guidelines, and
+                    average yields. It is not a guarantee of results.<br><br>
+                    Many factors affect actual timing and success: local microclimate, weather variation, soil quality, seed
+                    variety, grower experience, pest/disease pressure, light conditions, watering, fertilization, and more.<br><br>
+                    Dates can be off by weeks depending on conditions. Always monitor your plants and adjust based on real-world
+                    observation. Use this tool as a planning guide, not a rigid schedule.<br><br>
+                    Perpetual Genesis makes no warranties about accuracy or outcomes. Garden at your own risk — and enjoy the
+                    process.
+                  </div>
+                </div>
+              </div>
+              <div id="inventory" class="tab-content">
+                <div style="padding: 20px;">
+                  <h2 style="color:var(--accent); text-align:center;">Seed & Supply Inventory</h2>
+                  <p style="text-align:center; max-width:800px; margin:0 auto 30px;">
+                    Track your seeds, plugs, flats, and supplies. Know what you have and what you need.
+                  </p>
+                      <div class="plan-selector">
+      <div class="plan-tabs" id="inventoryPlanTabs"></div>
+      <div class="plan-actions">
+        <span class="plan-helper">
+          Plans are created & renamed on the My Garden tab.
+        </span>
+      </div>
+    </div>
+
+              
+                  <div class="controls" style="max-width:600px; margin:0 auto 30px;">
+                    <button class="primary" onclick="showAddInventoryForm()">+ Add Item</button>
+                    <input type="text" id="inventorySearch" placeholder="Search inventory..." onkeyup="filterInventory()"
+                      style="margin-left:20px; width:300px;">
+                      <button onclick="exportToPDF()" style="margin: 10px; padding: 10px 20px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer;">
+                        Export to PDF</button>
+                  </div>
+              
+                  <div id="addInventoryForm" style="display:none; background:var(--surface); padding:20px; border-radius:12px;
+                            margin-bottom:30px; max-width:600px; margin-left:auto; margin-right:auto;">
+              
+              
+              
+                  <label>Category:</label>
+<select id="invCategory">
+  <option>Seeds</option>
+  <option>Plugs / Starts</option>
+  <option>Bulbs / Tubers / Rhizomes</option>
+  <option>Cuttings / Clones</option>
+
+  <option>Flats / Trays</option>
+  <option>Pots / Containers</option>
+  <option>Raised Beds</option>
+  <option>Grow Bags</option>
+
+  <option>Soil / Media</option>
+  <option>Compost</option>
+  <option>Worm Castings</option>
+  <option>Coco Coir / Peat</option>
+  <option>Perlite / Vermiculite</option>
+
+  <option>Nutrients (Liquid / Dry)</option>
+  <option>Organic Fertilizers</option>
+  <option>Synthetic Fertilizers</option>
+  <option>Micro-nutrients</option>
+  <option>Soil Conditioners</option>
+
+  <option>Irrigation Supplies</option>
+  <option>Watering Tools</option>
+  <option>Timers / Controllers</option>
+  <option>Grow Lights</option>
+  <option>Heat Mats</option>
+
+  <option>Pest Control</option>
+  <option>Disease Control</option>
+  <option>Beneficial Insects</option>
+  <option>Row Covers / Netting</option>
+
+  <option>Hand Tools</option>
+  <option>Pruners / Shears</option>
+  <option>Labels / Markers</option>
+  <option>Trellising / Stakes</option>
+  <option>Measuring Tools</option>
+
+  <option>Packaging Supplies</option>
+  <option>Storage Containers</option>
+  <option>Cleaning / Sanitation</option>
+  <option>Replacement Parts</option>
+
+  <option>Books / References</option>
+  <option>Test Kits (Soil / pH / EC)</option>
+  <option>Other</option>
+</select>
+
+              
+                    <label>Name/Variety:</label>
+                    <input type="text" id="invName"><br><br>
+              
+                    <label>Brand/Source:</label>
+                    <input type="text" id="invBrand"><br><br>
+              
+                    <label>Quantity:</label>
+                    <input type="text" id="invQuantity"><br><br>
+              
+                    <label>Purchase Date:</label>
+                    <input type="date" id="invPurchaseDate"><br><br>
+              
+                    <label>Use-By Date:</label>
+                    <input type="date" id="invUseByDate"><br><br>
+              
+                    <label>Notes:</label>
+                    <textarea id="invNotes" rows="3"></textarea><br><br>
+              
+                    <button class="primary" onclick="saveInventoryItem()">Save Item</button>
+                    <button onclick="hideAddInventoryForm()" style="margin-left:10px;">Cancel</button>
+                  </div>
+                  <div id="inventoryTableWrapper">
+                    <table id="inventoryTable" style="display: table !important; width: 100%; border-collapse: collapse;">
+                      <thead>
+                        <tr>
+                          <th>Category</th>
+                          <th>Name/Variety</th>
+                          <th>Brand</th>
+                          <th>Quantity</th>
+                          <th>Purchase</th>
+                          <th>Use-By</th>
+                          <th>Notes</th>
+                          <th>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody id="inventoryBody">
+                        <!-- Filled by JS -->
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>                            
+<script src="pricing.js" defer></script>
+<script src="utils.js" defer></script>
+<script src="core.js" defer></script> 
+<script src="calculator.js" defer></script>
+<script src="mygarden.js" defer></script>
+<script src="timeline.js" defer></script>
+<script src="spacing.js" defer></script>
+<script src="layout.js" defer></script>
+<script src="micro.js"></script>
+<script src="perpetual.js" defer></script>
+<script src="inventory.js" defer></script>
+<script src="backup.js" defer></script>
+<script src="pwa.js" defer></script>
+</body>
+              
+</html>
