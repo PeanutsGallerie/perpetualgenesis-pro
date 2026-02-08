@@ -2535,5 +2535,77 @@ button[onclick*="deleteInventoryItem"]:hover {
   #mygarden #myGardenSearch { padding: 12px 12px; }
 }
 
+/* ─────────────────────────────────────────────
+   Donations banner (Free web app)
+   ───────────────────────────────────────────── */
+.pg-donate-banner {
+  position: fixed;
+  right: 12px;
+  bottom: 12px;
+  z-index: 9999;
+  max-width: 360px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 12px;
+  border: 1px solid rgba(0, 238, 255, 0.35);
+  background: rgba(0, 0, 0, 0.86);
+  color: var(--text);
+  border-radius: 14px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(6px);
+}
+
+.pg-donate-text strong {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 2px;
+}
+
+.pg-donate-text .pg-donate-sub {
+  font-size: 12px;
+  opacity: 0.85;
+}
+
+.pg-donate-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.pg-donate-btn {
+  background: var(--primary);
+  color: #000;
+  padding: 8px 10px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 800;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.pg-donate-close {
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-size: 20px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0 6px;
+  opacity: 0.8;
+}
+
+.pg-donate-close:hover { opacity: 1; }
+
+@media (max-width: 520px) {
+  .pg-donate-banner {
+    left: 12px;
+    right: 12px;
+    max-width: none;
+  }
+}
+
+
 
 
