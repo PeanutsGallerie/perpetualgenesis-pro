@@ -1,3 +1,4 @@
+
 let gardenPlansRaw = localStorage.getItem('gardenPlans');
 let gardenPlans;
 try {
@@ -52,6 +53,47 @@ function perPlanKey(base) {
     return `${base}__global`;
   }
 }
+
+function initDonateBanner() {
+  try {
+    // Only show on Free web build
+    if (window.PG_TIER && window.PG_TIER !== "free") return;
+
+    // Respect dismiss
+    if (localStorage.getItem("pg_hide_donate_banner") === "1") return;
+
+    // Donation URL must exist
+    const url = window.PG_DONATE_URL || "";
+    if (!url) return;
+
+    // Avoid duplicates
+    if (document.getElementById("pg-donate-banner")) return;
+
+    const wrap = document.createElement("div");
+    wrap.id = "pg-donate-banner";
+    wrap.className = "pg-donate-banner";
+    wrap.innerHTML = `
+      <div class="pg-donate-text">
+        <strong>Donations welcome</strong>
+        <div class="pg-donate-sub">Support the free version (no accounts, local-only).</div>
+      </div>
+      <div class="pg-donate-actions">
+        <a class="pg-donate-btn" href="${url}" target="_blank" rel="noopener noreferrer">Donate</a>
+        <button class="pg-donate-close" type="button" aria-label="Dismiss">×</button>
+      </div>
+    `;
+
+    document.body.appendChild(wrap);
+
+    wrap.querySelector(".pg-donate-close").addEventListener("click", () => {
+      localStorage.setItem("pg_hide_donate_banner", "1");
+      wrap.remove();
+    });
+  } catch (e) {
+    console.warn("Donate banner init failed:", e);
+  }
+}
+
 
 
 function showTab(tabId) {
@@ -533,6 +575,7 @@ document.addEventListener("DOMContentLoaded", () => {
   window.renderInventoryTable();
 
   bindSpacingModeToggle();
+  initDonateBanner();
 });
 
 /* ================= SHARE PLAN =================
