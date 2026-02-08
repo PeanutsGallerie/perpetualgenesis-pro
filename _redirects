@@ -1,0 +1,6 @@
+# Force canonical Pro domain (avoid netlify.app origin)
+https://YOUR-PRO-SITE.netlify.app/*  https://pro.perpetualgenesis.app/:splat  301!
+http://YOUR-PRO-SITE.netlify.app/*   https://pro.perpetualgenesis.app/:splat  301!
+
+# SPA fallback (safe)
+ /*  /index.html  200
