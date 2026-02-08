@@ -111,4 +111,3 @@ function removeGardenEntry(id) {
     loadMyGardenTab();
     renderTimeline();
 }
-
