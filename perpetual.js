@@ -1,4 +1,5 @@
-
+const perpetualCropRules = {
+  Lettuce: {
     daysToHarvest: 45,
     regrows: false,
     harvestWindow: 14,
@@ -486,6 +487,16 @@ function normalizeCropCategory(cat) {
 }
 
 function renderPerpetualCropPicker(listEl, cfg) {
+  // Ensure cfg exists even if My Garden plan system has not initialized yet
+  cfg = cfg || (window.__perpetualTmpCfg = window.__perpetualTmpCfg || {
+    selectedCrops: [],
+    daysBetween: 14,
+    successionCount: 6,
+    successionsPerRow: 3,
+    startDate: null,
+    showGapFillers: true,
+    appliedEntryIds: []
+  });
   // cfg is the current perpetual config for the selected plan
   const selected = new Set(Array.isArray(cfg.selectedCrops) ? cfg.selectedCrops : []);
   const state = (window.__perpetualCropPickerState ||= { q: "", cat: "__all__", showSelected: false, openCats: {} });
@@ -627,7 +638,7 @@ function renderPerpetualCropPicker(listEl, cfg) {
 
           cfg.selectedCrops = Array.from(next);
           // Save to the owning My Garden plan (same storage model you already use)
-          savePlans();
+          if (typeof savePlans === "function") savePlans();
 
           // Keep local selected in sync so bulk actions work instantly
           if (checkbox.checked) {
@@ -688,7 +699,7 @@ function renderPerpetualCropPicker(listEl, cfg) {
         const next = new Set(Array.isArray(cfg.selectedCrops) ? cfg.selectedCrops : []);
         visible.forEach(n => next.add(n));
         cfg.selectedCrops = Array.from(next);
-        savePlans();
+        if (typeof savePlans === "function") savePlans();
         visible.forEach(n => selected.add(n));
         render();
       });
@@ -700,7 +711,7 @@ function renderPerpetualCropPicker(listEl, cfg) {
         const next = new Set(Array.isArray(cfg.selectedCrops) ? cfg.selectedCrops : []);
         visible.forEach(n => next.delete(n));
         cfg.selectedCrops = Array.from(next);
-        savePlans();
+        if (typeof savePlans === "function") savePlans();
         visible.forEach(n => selected.delete(n));
         render();
       });
@@ -1101,3 +1112,13 @@ document.addEventListener("DOMContentLoaded", () => {
   renderPerpetualPlanTabs();
   renderPerpetual();
 });
+// ─────────────────────────────────────────────────────────────
+// Expose functions for inline HTML handlers and module builds
+// (Fixes: Uncaught ReferenceError: buildPerpetualPlan is not defined)
+// ─────────────────────────────────────────────────────────────
+try {
+  window.buildPerpetualPlan = buildPerpetualPlan;
+  window.clearCurrentPerpetualPlan = clearCurrentPerpetualPlan;
+  window.renderPerpetual = renderPerpetual;
+  window.renderPerpetualPlanTabs = renderPerpetualPlanTabs;
+} catch (e) {}
