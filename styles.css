@@ -1764,6 +1764,19 @@ input {
   opacity: 0.85;
 }
 
+#inventory #inventorySearch{
+  width:100%;
+  max-width:100%;
+  box-sizing:border-box;
+  margin-left:0;
+}
+
+@media (min-width:560px){
+  #inventory #inventorySearch{
+    max-width:300px;
+  }
+
+
 
 
 #inventoryTable {
@@ -2603,6 +2616,7 @@ button[onclick*="deleteInventoryItem"]:hover {
     max-width: none;
   }
 }
+
 
 
 
