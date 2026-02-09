@@ -1,5 +1,4 @@
-const perpetualCropRules = {
-  Lettuce: {
+
     daysToHarvest: 45,
     regrows: false,
     harvestWindow: 14,
@@ -30,18 +29,27 @@ const perpetualCropRules = {
   }
 };
 document.addEventListener("DOMContentLoaded", () => {
-
+  // Legacy <select id="perpetualCrop"> support (used by older perpetual UI)
+  // Safe-guards: do nothing if cropSuccessionData isn't available yet.
   const perpetualCropSelect = document.getElementById('perpetualCrop');
-  if (perpetualCropSelect) {
-    Object.keys(cropSuccessionData).forEach(crop => {
+  const src =
+    (typeof cropSuccessionData !== "undefined" && cropSuccessionData)
+      ? cropSuccessionData
+      : (window.cropSuccessionData || null);
+
+  if (perpetualCropSelect && src) {
+    // Avoid duplicating options if this runs more than once
+    if (perpetualCropSelect.options && perpetualCropSelect.options.length > 0) return;
+
+    Object.keys(src).forEach(crop => {
       const option = document.createElement('option');
       option.value = crop;
       option.textContent = crop.charAt(0).toUpperCase() + crop.slice(1);
       perpetualCropSelect.appendChild(option);
     });
   }
-
 });
+
 
 function renderPerpetualPlanTabs() {
   if (typeof renderPlanTabs !== "function") return; // defined globally by My Garden system
@@ -494,7 +502,7 @@ function renderPerpetualCropPicker(listEl, cfg) {
   // Build category map (cached)
   const catMap = getPerpetualCropCategoryMap();
 // Build / rebuild category options with real labels (base categories + helpful sub-groups)
-  const cropNamesAll = Object.keys(cropData || {}).sort((a, b) => a.localeCompare(b));
+  const cropNamesAll = Object.keys(window.cropData || {}).sort((a, b) => a.localeCompare(b));
   const catMeta = window.__perpetualCropCategoryMapMeta || {};
   const builtKey = `${cropNamesAll.length}:${catMeta.sectionsFound || 0}:${catMeta.weak ? 1 : 0}`;
 
@@ -517,7 +525,7 @@ function renderPerpetualCropPicker(listEl, cfg) {
     const cat = state.cat;
     const showSelected = !!state.showSelected;
 
-    return Object.keys(cropData || {})
+    return Object.keys(window.cropData || {})
       .sort((a, b) => a.localeCompare(b))
       .filter(name => {
         if (showSelected && !selected.has(name)) return false;
@@ -745,13 +753,36 @@ function renderPerpetual() {
     ? getCurrentPerpetualConfig()
     : null;
 
+  // Ensure cropData is built from the crop tables before we render the picker.
+  // (In some builds, Perpetual can render before Calculator initializes cropData.)
+  try {
+    if (typeof pgEnsureCropDataLoaded === "function") pgEnsureCropDataLoaded();
+  } catch (e) {}
+
+
   // ===== 1) Populate checkbox crop list =====
   const list = document.getElementById('perpetualCropList');
   if (!list) {
     console.warn("Perpetual: #perpetualCropList not found");
     return;
   }
-    // Render searchable + grouped crop picker (replaces the old single long list)
+  // Render searchable + grouped crop picker (replaces the old single long list)
+  const cd = (window.cropData && typeof window.cropData === "object") ? window.cropData : null;
+  if (!cd || Object.keys(cd).length === 0) {
+    list.innerHTML = '<div style="padding:8px 4px; opacity:0.8;">Loading crops…</div>';
+
+    const tries = (window.__pgPerpetualCropRetryTries || 0);
+    if (tries < 25) {
+      window.__pgPerpetualCropRetryTries = (tries + 1);
+      setTimeout(renderPerpetual, 160);
+    } else {
+      console.warn("Perpetual: cropData still empty after retries. Make sure collectCropData() runs and crop tables exist in the DOM.");
+      window.__pgPerpetualCropRetryTries = 0;
+    }
+    return;
+  }
+  window.__pgPerpetualCropRetryTries = 0;
+
   renderPerpetualCropPicker(list, cfg);
 
   // ===== 2) Restore controls (start date, days, count, etc.) =====
@@ -841,7 +872,7 @@ run.className = 'perpetual-run';
 
   // ----- build vertical groups per crop -----
   selectedCrops.forEach(crop => {
-    const data = cropData[crop];
+    const data = (window.cropData || {})[crop];
     if (!data) return;
 
     const group = document.createElement('div');
