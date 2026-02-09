@@ -5,6 +5,15 @@ function byId(id) {
   return document.getElementById(id);
 }
 
+// ───────────────────────────────────────────────────────────────
+// Bed placement policy
+// If true, beds may be dragged/resized/rotated so they can extend beyond
+// the property bounds. This removes the "length-based" placement limit.
+// ───────────────────────────────────────────────────────────────
+const PG_ALLOW_BEDS_OUT_OF_BOUNDS = true;
+
+
+
 function getPgViewportEl() {
   return (
     byId("propertyViewport") ||
@@ -1053,12 +1062,14 @@ function ensurePropertyStateInPlace(bedCount, srcProp) {
     if (!(typeof b.type === "string" && b.type)) b.type = "raised";
     // Path
     if (!(typeof b.pathFt === "number" && isFinite(b.pathFt))) b.pathFt = 2;
-    // Dimensions (null allowed)
-    if (!(b.wFt === null || (typeof b.wFt === "number" && isFinite(b.wFt) && b.wFt > 0))) {
-      b.wFt = null;
+    // Dimensions (persist per-bed defaults so they don't revert to stock after reload)
+    const _defWFt = parseFloat(byId("layoutBedW")?.value || byId("bedWidth")?.value || "") || null;
+    const _defLFt = parseFloat(byId("layoutBedL")?.value || byId("bedLength")?.value || "") || null;
+    if (!(typeof b.wFt === "number" && isFinite(b.wFt) && b.wFt > 0)) {
+      b.wFt = (typeof _defWFt === "number" && isFinite(_defWFt) && _defWFt > 0) ? _defWFt : null;
     }
-    if (!(b.lFt === null || (typeof b.lFt === "number" && isFinite(b.lFt) && b.lFt > 0))) {
-      b.lFt = null;
+    if (!(typeof b.lFt === "number" && isFinite(b.lFt) && b.lFt > 0)) {
+      b.lFt = (typeof _defLFt === "number" && isFinite(_defLFt) && _defLFt > 0) ? _defLFt : null;
     }
     // Plan metadata (null allowed)
     if (!(b.planId === null || (typeof b.planId === "string" && b.planId))) b.planId = null;
@@ -1324,6 +1335,27 @@ function loadPropertyLayout() {
     try {
       propertyState.beds?.forEach(b => { if (b && !b.offsetFt) b.offsetFt = ensureOffsetFt(b, propertyState.scale); });
       propertyState.obstacles?.forEach(o => { if (o && !o.offsetFt) o.offsetFt = ensureOffsetFt(o, propertyState.scale); });
+    } catch (e) {}
+
+
+
+    // Rebuild canonical arrays from bed objects (prevents "snap to birth" on next drag)
+    try {
+      const n = Array.isArray(propertyState.beds) ? propertyState.beds.length : 0;
+      if (n > 0) {
+        const scaleNow = (typeof data.scale === "number" && isFinite(data.scale) && data.scale > 0) ? data.scale : (propertyState.scale || 2);
+        bedOffsets = ensureBedOffsets(n, propertyState.beds.map((b) => {
+          if (b && b.offset && typeof b.offset.x === "number" && typeof b.offset.y === "number") return b.offset;
+          // fall back to offsetFt -> cells
+          return getDisplayCellPos((b || {}), scaleNow);
+        }));
+        bedRot = ensureBedRot(n, propertyState.beds.map((b) => (typeof b?.rot === "number" ? b.rot : 0)));
+        for (let i = 0; i < n; i++) {
+          if (!propertyState.beds[i]) propertyState.beds[i] = {};
+          propertyState.beds[i].offset = bedOffsets[i];
+          propertyState.beds[i].rot = bedRot[i] ? 1 : 0;
+        }
+      }
     } catch (e) {}
 
 return true;
@@ -1973,8 +2005,8 @@ spr.style.backgroundImage = svgUrl(svg);
         const colsMax = cols, rowsMax = rows;
         if (!propertyState) return;
 
-        // Clamp bed offsets
-        if (Array.isArray(propertyState.bedOffsets)) {
+        // Clamp bed offsets (optional)
+        if (!PG_ALLOW_BEDS_OUT_OF_BOUNDS && Array.isArray(propertyState.bedOffsets)) {
           const bedWU = Math.max(1, Math.ceil(bedW / scale));
           const bedLU = Math.max(1, Math.ceil(bedL / scale));
           for (let i = 0; i < propertyState.bedOffsets.length; i++) {
@@ -2183,10 +2215,13 @@ if (!canvas._pgSelectionBound) {
     let dy = displayPos.y;
 
     // Soft visual clamp only — never changes stored position
-    const bedMaxX = Math.max(0, cols - wU);
-    const bedMaxY = Math.max(0, rows - lU);
-    dx = Math.min(bedMaxX, Math.max(0, dx));
-    dy = Math.min(bedMaxY, Math.max(0, dy));
+    // NOTE: When PG_ALLOW_BEDS_OUT_OF_BOUNDS is true, do NOT clamp; allow beds to extend beyond bounds.
+    if (!PG_ALLOW_BEDS_OUT_OF_BOUNDS) {
+      const bedMaxX = Math.max(0, cols - wU);
+      const bedMaxY = Math.max(0, rows - lU);
+      dx = Math.min(bedMaxX, Math.max(0, dx));
+      dy = Math.min(bedMaxY, Math.max(0, dy));
+    }
 
     bedBlock.style.position = "absolute";
     bedBlock.style.left = (dx * cellSize) + "px";
@@ -2239,15 +2274,19 @@ if (!canvas._pgSelectionBound) {
       ensurePropertyStateInPlace(bedCount, propertyState);
       if (propertyState?.beds?.[b]) propertyState.beds[b].rot = bedRot[b] ? 1 : 0;
 
-      // clamp after rotation so it stays in bounds
-      const { wU, lU } = bedUnitsFor(b);
-      const maxX = Math.max(0, cols - wU);
-      const maxY = Math.max(0, rows - lU);
+      // clamp after rotation so it stays in bounds (optional)
       const cur = bedOffsets[b] || { x: 0, y: 0 };
-      bedOffsets[b] = {
-        x: Math.min(maxX, Math.max(0, cur.x)),
-        y: Math.min(maxY, Math.max(0, cur.y))
-      };
+      if (!PG_ALLOW_BEDS_OUT_OF_BOUNDS) {
+        const { wU, lU } = bedUnitsFor(b);
+        const maxX = Math.max(0, cols - wU);
+        const maxY = Math.max(0, rows - lU);
+        bedOffsets[b] = {
+          x: Math.min(maxX, Math.max(0, cur.x)),
+          y: Math.min(maxY, Math.max(0, cur.y))
+        };
+      } else {
+        bedOffsets[b] = { x: cur.x, y: cur.y };
+      }
 
       // keep offsets in canonical bed object
       ensurePropertyStateInPlace(bedCount, propertyState);
@@ -2292,9 +2331,11 @@ if (!canvas._pgSelectionBound) {
         nx = snapTo(nx, snapUnits);
         ny = snapTo(ny, snapUnits);
 
-        // clamp
-        nx = Math.min(maxX, Math.max(0, nx));
-        ny = Math.min(maxY, Math.max(0, ny));
+        // clamp (optional)
+        if (!PG_ALLOW_BEDS_OUT_OF_BOUNDS) {
+          nx = Math.min(maxX, Math.max(0, nx));
+          ny = Math.min(maxY, Math.max(0, ny));
+        }
 
         if (nx === lastX && ny === lastY) return;
 
@@ -2377,13 +2418,17 @@ if (!canvas._pgSelectionBound) {
           propertyState.beds[b].type = lockedType;
           propertyState.beds[b].wFt = nextWFt;
           propertyState.beds[b].lFt = nextLFt;
-          // Recompute footprint and clamp within bounds
+          // Recompute footprint and clamp within bounds (optional)
           const { wU, lU } = bedUnitsFor(b);
-          const maxX = Math.max(0, cols - wU);
-          const maxY = Math.max(0, rows - lU);
           const cur = bedOffsets[b] || { x: 0, y: 0 };
-          const nx = Math.min(maxX, Math.max(0, cur.x));
-          const ny = Math.min(maxY, Math.max(0, cur.y));
+          let nx = cur.x;
+          let ny = cur.y;
+          if (!PG_ALLOW_BEDS_OUT_OF_BOUNDS) {
+            const maxX = Math.max(0, cols - wU);
+            const maxY = Math.max(0, rows - lU);
+            nx = Math.min(maxX, Math.max(0, cur.x));
+            ny = Math.min(maxY, Math.max(0, cur.y));
+          }
           // Collision block: if the resized bed would collide, revert and do nothing
           if (typeof wouldCollide === "function" && wouldCollide(b, nx, ny)) {
             propertyState.beds[b].wFt = startWFt;
