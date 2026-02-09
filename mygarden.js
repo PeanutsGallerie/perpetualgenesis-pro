@@ -2,17 +2,6 @@ function addToGarden(crop) {
     const refDate = localStorage.getItem('myReferenceDate') || prompt('Enter reference date (MM/DD/YYYY):');
     if (!refDate) return;
     const plan = getCurrentPlan('mygarden');
-    // Monetization gate: Free = max 3 crops in the single bed/plan
-    try {
-        if (typeof window.pgLimit === "function") {
-            const max = window.pgLimit("maxCropsPerBed");
-            if (Number.isFinite(max) && Array.isArray(plan.entries) && plan.entries.length >= max) {
-                alert(`Free version allows up to ${max} crops in the bed. Pro removes this limit (store version).`);
-                return;
-            }
-        }
-    } catch (e) {}
-
     const entry = {
         id: Date.now().toString(),
         crop,
