@@ -1039,8 +1039,8 @@
               
                   <div class="controls" style="max-width:600px; margin:0 auto 30px;">
                     <button class="primary" onclick="showAddInventoryForm()">+ Add Item</button>
-                    
-                      style="margin-left:20px; width:300px;">
+                    <input type="text"id="inventorySearch"placeholder="Search inventory..."onkeyup="filterInventory()"
+                     style="margin-left:0; width:100%; max-width:300px; box-sizing:border-box;">
                       <button onclick="exportToPDF()" style="margin: 10px; padding: 10px 20px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer;">
                         Export to PDF</button>
                   </div>
