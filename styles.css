@@ -2605,69 +2605,17 @@ button[onclick*="deleteInventoryItem"]:hover {
   }
 }
 
-/* =========================================================
-   Selected Bed Planting Squares (collapsible)
-   - Prevents layout shift by keeping grid hidden until user opens it.
-   - Grid area scrolls instead of expanding the whole sidebar.
-   ========================================================= */
 
-#layout .pg-bed-squares-head {
+/* ─────────────────────────────────────────────────────────────
+   Layout – Property toolbar (Selected Bed editor) manual collapse
+   ───────────────────────────────────────────────────────────── */
+#layout #propertySelectedBedPanel .pg-panel-header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-bottom: 10px;
+  gap: 10px;
 }
 
-#layout .pg-bed-squares-meta strong {
-  display: block;
-}
-
-#layout .pg-bed-squares-plan {
-  display: block;
-  color: var(--text-secondary);
-  font-size: 0.9em;
-  margin-top: 2px;
-}
-
-#layout .pg-bed-squares-actions {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-#layout .pg-bed-squares-toggle {
+#layout #propertySelectedBedPanel #togglePropertyToolbarBtn {
   white-space: nowrap;
-}
-
-#layout .pg-bed-squares-grid {
-  max-height: min(380px, 45vh);
-  overflow: auto;
-  padding-right: 4px;
-  border-radius: 12px;
-}
-
-#layout .pg-bed-squares-collapsed {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 14px;
-  border-radius: 12px;
-  background: rgba(0, 0, 0, 0.18);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: var(--text-secondary);
-  min-height: 180px;
-}
-
-@media (max-width: 520px) {
-  #layout .pg-bed-squares-grid {
-    max-height: min(320px, 40vh);
-  }
-  #layout .pg-bed-squares-actions {
-    width: 100%;
-    justify-content: flex-start;
-  }
 }
