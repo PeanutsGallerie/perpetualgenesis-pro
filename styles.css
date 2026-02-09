@@ -1895,10 +1895,6 @@ button[onclick*="deleteInventoryItem"]:hover {
   }
 }
 
-}
-
-
-
 
 /* ===============================
    Layout tab: Property Map sizing
@@ -2638,6 +2634,7 @@ button[onclick*="deleteInventoryItem"]:hover {
     max-width: none;
   }
 }
+
 
 
 
