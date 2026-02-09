@@ -2606,16 +2606,10 @@ button[onclick*="deleteInventoryItem"]:hover {
 }
 
 
-/* ─────────────────────────────────────────────────────────────
-   Layout – Property toolbar (Selected Bed editor) manual collapse
-   ───────────────────────────────────────────────────────────── */
-#layout #propertySelectedBedPanel .pg-panel-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-#layout #propertySelectedBedPanel #togglePropertyToolbarBtn {
-  white-space: nowrap;
+/* Mini button used in layout summary collapsible headers */
+#layout .pg-mini-btn{
+  padding: 4px 10px;
+  font-size: 12px;
+  border-radius: 10px;
+  cursor: pointer;
 }
