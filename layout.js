@@ -3773,6 +3773,29 @@ try {
   render();
 }
 
+
+function pgGetBedSquaresPanelOpen(panel) {
+  try {
+    const v = panel && panel.dataset ? panel.dataset.pgBedSquaresOpen : null;
+    if (v === "1") return true;
+    if (v === "0") return false;
+  } catch (e) {}
+  try {
+    const saved = localStorage.getItem("pgBedSquaresOpen");
+    if (saved === "1" || saved === "0") {
+      try { if (panel && panel.dataset) panel.dataset.pgBedSquaresOpen = saved; } catch (e2) {}
+      return saved === "1";
+    }
+  } catch (e) {}
+  try { if (panel && panel.dataset) panel.dataset.pgBedSquaresOpen = "0"; } catch (e) {}
+  return false;
+}
+
+function pgSetBedSquaresPanelOpen(panel, open) {
+  const v = open ? "1" : "0";
+  try { if (panel && panel.dataset) panel.dataset.pgBedSquaresOpen = v; } catch (e) {}
+  try { localStorage.setItem("pgBedSquaresOpen", v); } catch (e) {}
+}
 function renderSelectedBedGrid(b) {
   const panel = byId("selectedBedPanel") || getSelectedBedPanelNode();
   if (!panel) return;
@@ -3783,10 +3806,24 @@ function renderSelectedBedGrid(b) {
     panel.dataset.pgMinH = String(h || 260);
   }
   panel.style.minHeight = panel.dataset.pgMinH + "px";
+
   // Default to currently selected bed
   if (b == null) b = selectedBedIndex;
+
+  // Collapsible planting squares panel (default collapsed; user controls open/close).
+  const isOpen = pgGetBedSquaresPanelOpen(panel);
+
   if (b == null) {
     panel.innerHTML = `
+      <div class="pg-bed-squares-head">
+        <div class="pg-bed-squares-meta">
+          <strong>Selected Bed Planting Squares</strong>
+          <span class="pg-bed-squares-plan">Hover/click a bed to view planting squares.</span>
+        </div>
+        <div class="pg-bed-squares-actions">
+          <button type="button" class="primary pg-bed-squares-toggle" disabled>Open planting squares</button>
+        </div>
+      </div>
       <div class="pg-selectedbed-empty" style="display:flex;align-items:center;justify-content:center;height:100%;min-height:${panel.dataset.pgMinH}px;color:var(--text-secondary);font-size:0.95em;text-align:center;padding:14px;">
         Hover/click a bed to view planting squares.
       </div>
@@ -3806,21 +3843,56 @@ function renderSelectedBedGrid(b) {
   const { start, end } = getBedSliceRange(b, bedSq);
   const planId = getBedPlanId(b);
   const planName = planId ? getMyGardenPlanNameById(planId) : "(no plan selected)";
+
   // Render the crop bed editor UI (right-side panel)
   panel.innerHTML = `
-    <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px;">
-      <div style="display:flex; flex-direction:column; gap:2px;">
+    <div class="pg-bed-squares-head">
+      <div class="pg-bed-squares-meta">
         <strong>Bed ${b + 1} squares</strong>
-        <span style="font-size:12px; opacity:0.8;">Plan for this bed: ${escapeHtml(planName)}</span>
+        <span class="pg-bed-squares-plan">Plan for this bed: ${escapeHtml(planName)}</span>
       </div>
-      <button type="button" id="assignPlanToBedBtn">Populate from selected plan</button>
+      <div class="pg-bed-squares-actions">
+        <button type="button" id="toggleBedSquaresBtn" class="primary pg-bed-squares-toggle">${isOpen ? "Close planting squares" : "Open planting squares"}</button>
+        <button type="button" id="assignPlanToBedBtn">Populate from selected plan</button>
+      </div>
     </div>
-    <div id="selectedBedGrid" style="
-      display:grid;
-      grid-template-columns: repeat(${Math.max(1, lastLayout.w)}, 1fr);
-      gap:6px;
-    "></div>
+    ${isOpen ? `
+      <div id="selectedBedGrid" class="pg-bed-squares-grid" style="
+        display:grid;
+        grid-template-columns: repeat(${Math.max(1, lastLayout.w)}, 1fr);
+        gap:6px;
+      "></div>
+    ` : `
+      <div class="pg-bed-squares-collapsed">
+        Planting squares are collapsed to prevent layout jumping when beds change. Tap <strong>Open planting squares</strong> to view/edit.
+      </div>
+    `}
   `;
+
+  // Open/Close toggle (user-controlled; selecting a bed does NOT auto-open)
+  const tbtn = byId("toggleBedSquaresBtn");
+  if (tbtn) {
+    tbtn.onclick = () => {
+      pgSetBedSquaresPanelOpen(panel, !pgGetBedSquaresPanelOpen(panel));
+      renderSelectedBedGrid(b);
+    };
+  }
+
+  // Assign plan button (works even while collapsed)
+  const btn = byId("assignPlanToBedBtn");
+  if (btn) {
+    btn.onclick = () => {
+      const pid = byId("propBedPlanSelect")?.value || getBedPlanId(b);
+      const pname = pid ? getMyGardenPlanNameById(pid) : "(no plan selected)";
+      const ok = confirm(`Populate Bed ${b + 1} with crops from "${pname}"? This will overwrite crops currently in this bed.`);
+      if (!ok) return;
+      populateBedFromPlan(b, pid);
+    };
+  }
+
+  // If collapsed, stop here (no grid render → no layout shift on bed selection).
+  if (!isOpen) return;
+
   const grid = byId("selectedBedGrid");
   if (!grid) return;
   // Render squares for this bed
@@ -3838,17 +3910,6 @@ function renderSelectedBedGrid(b) {
       render();
     };
     grid.appendChild(cell);
-  }
-  // Assign plan button
-  const btn = byId("assignPlanToBedBtn");
-  if (btn) {
-    btn.onclick = () => {
-      const pid = byId("propBedPlanSelect")?.value || getBedPlanId(b);
-      const pname = pid ? getMyGardenPlanNameById(pid) : "(no plan selected)";
-      const ok = confirm(`Populate Bed ${b + 1} with crops from "${pname}"? This will overwrite crops currently in this bed.`);
-      if (!ok) return;
-      populateBedFromPlan(b, pid);
-    };
   }
 }
 
