@@ -1894,6 +1894,7 @@ button[onclick*="deleteInventoryItem"]:hover {
     max-width: none;
   }
 }
+}        
 
 
 /* ===============================
@@ -2634,6 +2635,7 @@ button[onclick*="deleteInventoryItem"]:hover {
     max-width: none;
   }
 }
+
 
 
 
