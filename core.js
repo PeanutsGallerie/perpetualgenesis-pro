@@ -21,6 +21,7 @@ let currentPlanId = {
     timeline: gardenPlans.currentTimeline || 'main'
 };
 let cropData = {};
+window.cropData = cropData;
 let progressData = JSON.parse(localStorage.getItem('cropProgress') || '{}');
 let notesData = JSON.parse(localStorage.getItem('cropNotes') || '{}');
 const methodOffsets = {
@@ -201,6 +202,7 @@ function addAddButtons() {
 
         function collectCropData() {
             cropData = {};
+            try { window.cropData = cropData; } catch (e) {}
             const tableIds = ['springAllTable', 'springVegetablesTable', 'springFruitsTable', 'springHerbsTable', 'springFlowersTable', 'fallAllTable', 'fallVegetablesTable', 'fallHerbsTable', 'fallFlowersTable'];
             tableIds.forEach(id => {
                 const table = document.getElementById(id);
@@ -762,7 +764,9 @@ function pgEnsureCropDataLoaded() {
   try {
     if (typeof cropData === "object" && cropData && Object.keys(cropData).length > 0) return;
   } catch (e) {}
-  try { if (typeof collectCropData === "function") collectCropData(); } catch (e) {}
+  try { if (typeof collectCropData === "function") collectCropData(); } catch (e) {}  
+  try { window.cropData = cropData; } catch (e) {}
+
 }
 
 function pgParseDateAny(str) {
