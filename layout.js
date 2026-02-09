@@ -10,7 +10,7 @@ function byId(id) {
 // If true, beds may be dragged/resized/rotated so they can extend beyond
 // the property bounds. This removes the "length-based" placement limit.
 // ───────────────────────────────────────────────────────────────
-const PG_ALLOW_BEDS_OUT_OF_BOUNDS = true;
+const PG_ALLOW_BEDS_OUT_OF_BOUNDS = false;
 
 
 
