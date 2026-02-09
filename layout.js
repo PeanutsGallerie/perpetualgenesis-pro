@@ -261,36 +261,10 @@ function installBedSelectionClickHandlers() {
   vp.dataset.pgBedClickBound = "1";
 
   vp.addEventListener("click", handleCanvasClick);
-
-  // Mobile guard: treat only TAP-like touches as clicks (prevents toolbar/UI flicker while dragging beds on phones).
-  let __pgTouchDown = null;
-  vp.addEventListener("touchstart", (e) => {
-    const t = e.touches && e.touches[0];
-    if (!t) return;
-    // If multi-touch (pinch), never treat as a click.
-    if (e.touches && e.touches.length > 1) {
-      __pgTouchDown = { moved: true };
-      return;
-    }
-    __pgTouchDown = { x: t.clientX, y: t.clientY, moved: false };
-  }, { passive: true });
-
-  vp.addEventListener("touchmove", (e) => {
-    if (!__pgTouchDown) return;
-    const t = e.touches && e.touches[0];
-    if (!t) return;
-    if (e.touches && e.touches.length > 1) { __pgTouchDown.moved = true; return; }
-    const dx = Math.abs(t.clientX - (__pgTouchDown.x || 0));
-    const dy = Math.abs(t.clientY - (__pgTouchDown.y || 0));
-    if (dx > 10 || dy > 10) __pgTouchDown.moved = true;
-  }, { passive: true });
-
-  // Optional mobile: touch -> click-like selection (only if it was a tap, not a drag).
+  // Optional mobile: touch
   vp.addEventListener("touchend", (e) => {
+    // Convert touchend to a click-like event object
     const t = e.changedTouches && e.changedTouches[0];
-    const moved = !!(__pgTouchDown && __pgTouchDown.moved);
-    __pgTouchDown = null;
-    if (moved) return;
     if (!t) return handleCanvasClick(e);
     handleCanvasClick({ target: e.target, clientX: t.clientX, clientY: t.clientY });
   }, { passive: true });
@@ -2125,6 +2099,7 @@ spr.style.backgroundImage = svgUrl(svg);
             if (e.pointerId !== ev.pointerId) return;
             window.removeEventListener("pointermove", onMove);
             window.removeEventListener("pointerup", onUp);
+        window.removeEventListener("pointercancel", onUp);
             try { ob.releasePointerCapture(ev.pointerId); } catch (e2) {}
             ensureWithinBounds();
             // Save in absolute feet (preserves position across dimension/scale changes)
@@ -2138,6 +2113,7 @@ spr.style.backgroundImage = svgUrl(svg);
 
           window.addEventListener("pointermove", onMove, { passive: false });
           window.addEventListener("pointerup", onUp);
+      window.addEventListener("pointercancel", onUp);
         });
 canvas.appendChild(ob);
   });
@@ -2237,11 +2213,25 @@ if (!canvas._pgSelectionBound) {
         if (typeof renderSelectedBedGrid === "function") renderSelectedBedGrid(backTo);
       } catch (e) {}
     });
-    // Click selects (without interfering with drag)
-    bedBlock.addEventListener("pointerdown", () => {
-      setSelectedBed(b);
+    // Tap selects (prevents "select on drag" glitches on mobile)
+    bedBlock.addEventListener("pointerdown", (ev) => {
+      try {
+        bedBlock._pgTap = { id: ev.pointerId, x: ev.clientX, y: ev.clientY, moved: false };
+      } catch(e) {}
     });
-    bedBlock.ondblclick = (e) => {
+    bedBlock.addEventListener("pointermove", (ev) => {
+      const t = bedBlock._pgTap;
+      if (!t || ev.pointerId !== t.id) return;
+      const dx = Math.abs(ev.clientX - t.x);
+      const dy = Math.abs(ev.clientY - t.y);
+      if (dx + dy > 10) t.moved = true;
+    });
+    bedBlock.addEventListener("pointerup", (ev) => {
+      const t = bedBlock._pgTap;
+      if (!t || ev.pointerId !== t.id) return;
+      bedBlock._pgTap = null;
+      if (!t.moved) setSelectedBed(b);
+    });bedBlock.ondblclick = (e) => {
       e.preventDefault();
       bedRot[b] = bedRot[b] ? 0 : 1;
 
@@ -2324,6 +2314,7 @@ if (!canvas._pgSelectionBound) {
 
         window.removeEventListener("pointermove", onMove);
         window.removeEventListener("pointerup", onUp);
+        window.removeEventListener("pointercancel", onUp);
         bedBlock.style.cursor = "grab";
         try { bedBlock.releasePointerCapture(ev.pointerId); } catch (e2) {}
 
@@ -2349,6 +2340,7 @@ if (!canvas._pgSelectionBound) {
 
       window.addEventListener("pointermove", onMove, { passive: false });
       window.addEventListener("pointerup", onUp);
+      window.addEventListener("pointercancel", onUp);
     });
 
     // --- resize handle (only show on selected bed) ---
@@ -2409,6 +2401,7 @@ if (!canvas._pgSelectionBound) {
         const onUp = () => {
           window.removeEventListener("pointermove", onMove);
           window.removeEventListener("pointerup", onUp);
+        window.removeEventListener("pointercancel", onUp);
           // Persist
           propertyState.beds[b].type = lockedType;
           propertyState.beds[b].rot = bedRot?.[b] ? 1 : 0;
@@ -2416,6 +2409,7 @@ if (!canvas._pgSelectionBound) {
         };
         window.addEventListener("pointermove", onMove);
         window.addEventListener("pointerup", onUp);
+      window.addEventListener("pointercancel", onUp);
       });
     }
     canvas.appendChild(bedBlock);
@@ -3221,9 +3215,35 @@ let hoveredBedIndex = null; // transient hover target for right-side square pane
 let obstaclePanelCollapsed = false;
 try { obstaclePanelCollapsed = localStorage.getItem("pg_obstacle_panel_collapsed") === "1"; } catch(e) {}
 
-// User-controlled collapse for the Property toolbar (Selected Bed editor)
+// User-controlled collapses (persisted)
 let propertyToolbarCollapsed = false;
+let selectedSquaresCollapsed = false;
 try { propertyToolbarCollapsed = localStorage.getItem("pg_property_toolbar_collapsed") === "1"; } catch(e) {}
+try { selectedSquaresCollapsed = localStorage.getItem("pg_selected_squares_collapsed") === "1"; } catch(e) {}
+
+// Layout summary toggle handler (installed once)
+let __pgSummaryToggleInstalled = false;
+function ensureSummaryToggleHandlers() {
+  if (__pgSummaryToggleInstalled) return;
+  __pgSummaryToggleInstalled = true;
+  document.addEventListener("click", (e) => {
+    const t = e.target;
+    if (!t || !t.id) return;
+    if (t.id === "togglePropertyToolbarBtn") {
+      propertyToolbarCollapsed = !propertyToolbarCollapsed;
+      try { localStorage.setItem("pg_property_toolbar_collapsed", propertyToolbarCollapsed ? "1" : "0"); } catch(e2) {}
+      try { render(); } catch(e3) {}
+      return;
+    }
+    if (t.id === "toggleSelectedSquaresBtn") {
+      selectedSquaresCollapsed = !selectedSquaresCollapsed;
+      try { localStorage.setItem("pg_selected_squares_collapsed", selectedSquaresCollapsed ? "1" : "0"); } catch(e2) {}
+      try { render(); } catch(e3) {}
+      return;
+    }
+  }, true);
+}
+
 propertyState = null;
 
 function readBedDimsFromInputs() {
@@ -3539,21 +3559,28 @@ function render() {
           <div style="margin-top:12px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.10);">
             <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px;">
               <strong>Property Toolbar</strong>
-              <span style="font-size:12px; opacity:0.75;">Edit selected bed</span>
+              <div style="display:flex; gap:8px; align-items:center;">
+                <button type="button" id="togglePropertyToolbarBtn" class="pg-mini-btn">${propertyToolbarCollapsed ? "Expand" : "Collapse"}</button>
+                <span style="font-size:12px; opacity:0.75;">Edit selected bed</span>
+              </div>
             </div>
-            <div id="layoutBedEditorMount"></div>
+            <div id="layoutBedEditorMount" style="display:${propertyToolbarCollapsed ? "none" : "block"};"></div>
           </div>
         </div>
 
         <div id="layoutSelectedBedHost" style="flex:1 1 360px; background:rgba(0,0,0,0.18); border:1px solid rgba(0,238,255,0.35); border-radius:12px; padding:12px;">
           <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px;">
             <strong>Selected Bed Planting Squares</strong>
-            <span style="font-size:12px; opacity:0.75;">Hover/click a bed</span>
+            <div style="display:flex; gap:8px; align-items:center;">
+              <button type="button" id="toggleSelectedSquaresBtn" class="pg-mini-btn">${selectedSquaresCollapsed ? "Expand" : "Collapse"}</button>
+              <span style="font-size:12px; opacity:0.75;">Hover/click a bed</span>
+            </div>
           </div>
-          <div id="layoutSelectedBedMount"></div>
+          <div id="layoutSelectedBedMount" style="display:${selectedSquaresCollapsed ? "none" : "block"};"></div>
         </div>
       </div>
     `;
+    try { ensureSummaryToggleHandlers(); } catch(e) {}
   }
   // Re-attach the selected-bed panel into the new mount created above.
   try { attachSelectedBedPanelNodeToMount(); } catch (e) {}
@@ -3927,7 +3954,6 @@ function renderPropertySelectedBedPanel(bedCount) {
   if (!panel) {
     panel = document.createElement("div");
     panel.id = "propertySelectedBedPanel";
-    panel.classList.add("bed-offset-controls", "pg-property-toolbar");
     panel.style.padding = "10px";
     panel.style.marginBottom = "10px";
     panel.style.border = "1px solid rgba(0,238,255,0.35)";
@@ -3991,38 +4017,32 @@ const planOptions = hasPlans
       ? "Click anywhere on the property grid to start, then add your first bed."
       : "Click a bed on the property map to edit.";
 
-    const toggleLabel = propertyToolbarCollapsed ? "Expand" : "Collapse";
-    const bodyDisplay = propertyToolbarCollapsed ? "none" : "block";
-
     panel.innerHTML = `
-      <div class="pg-panel-header" style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+      <div style="opacity:.9;">
         <strong>${title}</strong>
-        <button type="button" id="togglePropertyToolbarBtn">${toggleLabel}</button>
-      </div>
+        <div style="margin-top:6px; font-size:12px; opacity:.8;">${helper}</div>
 
-      <div id="propertySelectedBedBody" style="display:${bodyDisplay}; margin-top:8px;">
-        <div style="opacity:.9;">
-          <div style="margin-top:6px; font-size:12px; opacity:.8;">${helper}</div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;">
+          <button type="button" id="propAddFirstBedBtn">${bedCount === 0 ? "Add first bed" : "Add bed"}</button>
+          ${bedCount > 0 ? `</button>` : ``}
+          <button type="button" id="propBuildRefreshBtn">Build / Refresh</button>
+          <button type="button" id="propSaveLayoutBtn">Save</button>
+          <button type="button" id="propPrintLayoutBtn">Print</button>
+        </div>
 
-          <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;">
-            <button type="button" id="propAddFirstBedBtn">${bedCount === 0 ? "Add first bed" : "Add bed"}</button>
-            <button type="button" id="propBuildRefreshBtn">Build / Refresh</button>
-            <button type="button" id="propSaveLayoutBtn">Save</button>
-            <button type="button" id="propPrintLayoutBtn">Print</button>
-          </div>
-
-          <div style="display:flex; flex-direction:column; gap:6px; margin-top:10px; padding:10px; border:1px solid rgba(255,255,255,0.12); border-radius:10px;">
-            <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
-              <div style="display:flex; flex-direction:column; gap:2px;">
-                <strong style="font-size:13px;">Optional: default plan for the new bed</strong>
-                <span style="font-size:12px; opacity:.8;">This sets the bed's plan. You can populate later.</span>
-              </div>
+        <div style="display:flex; flex-direction:column; gap:6px; margin-top:10px; padding:10px; border:1px solid rgba(255,255,255,0.12); border-radius:10px;">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+            <div style="display:flex; flex-direction:column; gap:2px;">
+              <strong style="font-size:13px;">Optional: default plan for the new bed</strong>
+              <span style="font-size:12px; opacity:.8;">This sets the bed's plan. You can populate later.</span>
             </div>
-            <select id="propFirstBedPlanSelect">${planOptions}</select>
           </div>
+          <select id="propFirstBedPlanSelect">${planOptions}</select>
         </div>
       </div>
-    `;// Wire actions
+    `;
+
+    // Wire actions
     const addBtn = panel.querySelector("#propAddFirstBedBtn");
 
 // Track the "default plan for the new bed" dropdown (independent from the selected bed plan)
@@ -4095,17 +4115,10 @@ const planOptions = hasPlans
       .join("")
   : `<option value="">Loading plans...</option>`;
 
-  const toggleLabel = propertyToolbarCollapsed ? "Expand" : "Collapse";
-  const bodyDisplay = propertyToolbarCollapsed ? "none" : "block";
-
   panel.innerHTML = `
-    <div class="pg-panel-header" style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+    <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
       <strong>Selected: Bed ${idx + 1}</strong>
-      <button type="button" id="togglePropertyToolbarBtn">${toggleLabel}</button>
-    </div>
-
-    <div id="propertySelectedBedBody" style="display:${bodyDisplay}; margin-top:8px;">
-      <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;">
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
         <button type="button" id="propRotateBtn">Rotate</button>
         <button type="button" id="propAddBedBtn">Add Bed</button>
         <button type="button" id="propRemoveBedBtn">Remove Bed</button>
@@ -4113,76 +4126,76 @@ const planOptions = hasPlans
         <button type="button" id="propSaveLayoutBtn">Save</button>
         <button type="button" id="propPrintLayoutBtn">Print</button>
       </div>
-
-      <div style="display:flex; flex-direction:column; gap:6px; padding:10px; border:1px solid rgba(255,255,255,0.12); border-radius:10px;">
-        <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
-          <div style="display:flex; flex-direction:column; gap:2px;">
-            <strong style="font-size:13px;">Plan for this bed</strong>
-            <span style="font-size:12px; opacity:.8;">Selecting a plan here only affects this bed.</span>
-          </div>
-          <button type="button" id="propPopulateBedBtn" title="Populate this bed from the selected plan">Populate Bed</button>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:6px; margin-top:10px; padding:10px; border:1px solid rgba(255,255,255,0.12); border-radius:10px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+        <div style="display:flex; flex-direction:column; gap:2px;">
+          <strong style="font-size:13px;">Plan for this bed</strong>
+          <span style="font-size:12px; opacity:.8;">Selecting a plan here only affects this bed.</span>
         </div>
-        <select id="propBedPlanSelect">${planOptions}</select>
+        <button type="button" id="propPopulateBedBtn" title="Populate this bed from the selected plan">Populate Bed</button>
       </div>
-
-      <div style="display:grid; gap:8px; grid-template-columns: 1fr 1fr; margin-top:10px;">
-        <label style="display:flex; flex-direction:column; gap:4px;">
-          <span style="font-size:12px; opacity:.85;">Bed name</span>
-          <input id="propBedName" type="text" value="${String(bed.name || `Bed ${idx + 1}`).replace(/"/g, "&quot;")}">
-        </label>
-        <label style="display:flex; flex-direction:column; gap:4px;">
-          <span style="font-size:12px; opacity:.85;">Type</span>
-          <select id="propBedType">
-            <option value="raised">Raised bed</option>
-            <option value="inground">In-ground</option>
-            <option value="row">Rows</option>
-            <option value="greenhouse">Greenhouse</option>
-            <option value="container">Container</option>
-          </select>
-        </label>
-        <label style="display:flex; flex-direction:column; gap:4px;">
-          <span style="font-size:12px; opacity:.85;">Path / spacing (ft)</span>
-          <input id="propBedPathFt" type="number" step="0.5" min="0"
-                 value="${Number.isFinite(bed.pathFt) ? bed.pathFt : 2}">
-        </label>
-        <div style="display:flex; flex-direction:column; gap:4px;">
-          <span style="font-size:12px; opacity:.85;">Rotation</span>
-          <div style="opacity:.9; font-size:12px;">
-            ${bedRot?.[idx] ? "Rotated (90°)" : "Normal"}
-          </div>
-        </div>
-        <label style="display:flex; flex-direction:column; gap:4px;">
-          <span style="font-size:12px; opacity:.85;">Bed width (ft)</span>
-          <input id="propBedWFt" type="number" step="0.5" min="0.5"
-                 value="${Number.isFinite(bed.wFt) ? bed.wFt : ""}">
-        </label>
-        <label style="display:flex; flex-direction:column; gap:4px;">
-          <span style="font-size:12px; opacity:.85;">Bed length (ft)</span>
-          <input id="propBedLFt" type="number" step="0.5" min="0.5"
-                 value="${Number.isFinite(bed.lFt) ? bed.lFt : ""}">
-        </label>
-        <!-- ROW CONTROLS -->
-        <label style="display:flex; flex-direction:column; gap:4px;">
-          <span style="font-size:12px; opacity:.85;">Row count</span>
-          <input id="propRowCount" type="number" step="1" min="0"
-                 value="${Number.isFinite(bed.rowCount) ? bed.rowCount : 0}">
-        </label>
-        <label style="display:flex; flex-direction:column; gap:4px;">
-          <span style="font-size:12px; opacity:.85;">Row direction</span>
-          <select id="propRowDir">
-            <option value="auto">Auto</option>
-            <option value="vertical">Vertical</option>
-            <option value="horizontal">Horizontal</option>
-          </select>
-        </label>
-        <label style="display:flex; flex-direction:column; gap:4px;">
-          <span style="font-size:12px; opacity:.85;">Row spacing (ft)</span>
-          <input id="propRowSpacingFt" type="number" step="0.25" min="0.25"
-                 value="${Number.isFinite(bed.rowSpacingFt) ? bed.rowSpacingFt : 1}">
-        </label>
+      <select id="propBedPlanSelect">${planOptions}</select>
+    </div>
+    <div style="display:grid; gap:8px; grid-template-columns: 1fr 1fr; margin-top:10px;">
+      <label style="display:flex; flex-direction:column; gap:4px;">
+        <span style="font-size:12px; opacity:.85;">Bed name</span>
+      <input id="propBedName" type="text" value="${String(bed.name || `Bed ${idx + 1}`).replace(/"/g, "&quot;")}">
+    </label>
+    <label style="display:flex; flex-direction:column; gap:4px;">
+      <span style="font-size:12px; opacity:.85;">Type</span>
+      <select id="propBedType">
+        <option value="raised">Raised bed</option>
+        <option value="inground">In-ground</option>
+        <option value="row">Rows</option>
+        <option value="greenhouse">Greenhouse</option>
+        <option value="container">Container</option>
+      </select>
+    </label>
+    <label style="display:flex; flex-direction:column; gap:4px;">
+      <span style="font-size:12px; opacity:.85;">Path / spacing (ft)</span>
+      <input id="propBedPathFt" type="number" step="0.5" min="0"
+             value="${Number.isFinite(bed.pathFt) ? bed.pathFt : 2}">
+    </label>
+    <div style="display:flex; flex-direction:column; gap:4px;">
+      <span style="font-size:12px; opacity:.85;">Rotation</span>
+      <div style="opacity:.9; font-size:12px;">
+        ${bedRot?.[idx] ? "Rotated (90°)" : "Normal"}
       </div>
     </div>
-  `;// Set current values for selects
+    <label style="display:flex; flex-direction:column; gap:4px;">
+      <span style="font-size:12px; opacity:.85;">Bed width (ft)</span>
+      <input id="propBedWFt" type="number" step="0.5" min="0.5"
+             value="${Number.isFinite(bed.wFt) ? bed.wFt : ""}">
+    </label>
+    <label style="display:flex; flex-direction:column; gap:4px;">
+      <span style="font-size:12px; opacity:.85;">Bed length (ft)</span>
+      <input id="propBedLFt" type="number" step="0.5" min="0.5"
+             value="${Number.isFinite(bed.lFt) ? bed.lFt : ""}">
+    </label>
+    <!-- ROW CONTROLS -->
+    <label style="display:flex; flex-direction:column; gap:4px;">
+      <span style="font-size:12px; opacity:.85;">Row count</span>
+      <input id="propRowCount" type="number" step="1" min="0"
+             value="${Number.isFinite(bed.rowCount) ? bed.rowCount : 0}">
+    </label>
+    <label style="display:flex; flex-direction:column; gap:4px;">
+      <span style="font-size:12px; opacity:.85;">Row direction</span>
+      <select id="propRowDir">
+        <option value="auto">Auto</option>
+        <option value="vertical">Vertical</option>
+        <option value="horizontal">Horizontal</option>
+      </select>
+    </label>
+    <label style="display:flex; flex-direction:column; gap:4px;">
+      <span style="font-size:12px; opacity:.85;">Row spacing (ft)</span>
+      <input id="propRowSpacingFt" type="number" step="0.25" min="0.25"
+             value="${Number.isFinite(bed.rowSpacingFt) ? bed.rowSpacingFt : 1}">
+    </label>
+  </div>
+  `;
+
+  // Set current values for selects
   const typeSel = panel.querySelector("#propBedType");
   if (typeSel) typeSel.value = bed.type || "raised";
 
