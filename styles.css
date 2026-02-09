@@ -1862,6 +1862,39 @@ button[onclick*="deleteInventoryItem"] {
 
 button[onclick*="deleteInventoryItem"]:hover {
     background: #fa0000;
+/* ---------------- Inventory: keep search bar inside card on small screens ---------------- */
+
+#inventory .controls{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+  align-items:center;
+  justify-content:center;
+}
+
+/* Override the inline width/margin that causes overflow */
+#inventory #inventorySearch{
+  flex: 1 1 220px;
+  min-width: 0;
+  max-width: 520px;
+  width: 100% !important;
+  margin-left: 0 !important;
+  box-sizing: border-box;
+}
+
+@media (max-width: 520px){
+  #inventory .controls{
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  #inventory .controls button,
+  #inventory #inventorySearch{
+    width: 100% !important;
+    max-width: none;
+  }
+}
+
 }
 
 
@@ -2605,6 +2638,7 @@ button[onclick*="deleteInventoryItem"]:hover {
     max-width: none;
   }
 }
+
 
 
 
