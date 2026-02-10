@@ -52,18 +52,12 @@ function pgApplyGutterSize(wrapEl) {
 
   // ───────────────────────────────────────────────────────────────
   // Mobile input focus guard (prevents keyboard opening then closing)
-  // Stops layout/canvas handlers from stealing the tap/click that focuses inputs.
+  // Only intercept events that are intended to focus/operate form fields.
+  // DO NOT intercept buttons (e.g., Add Obstacle) or other controls.
   // ───────────────────────────────────────────────────────────────
-  function __pgIsFormField(el) {
-    if (!el) return false;
-    const t = el.tagName;
-    return (t === "INPUT" || t === "TEXTAREA" || t === "SELECT" || !!el.isContentEditable);
-  }
-
-  function __pgIsInLayoutEditor(el) {
-    try {
-      return !!(el && el.closest && (el.closest("#selectedBedPanel") || el.closest("#bedOffsetControls") || el.closest("#obstacleControls") || el.closest(".obstacle-row")));
-    } catch (e) { return false; }
+  function __pgIsFormInteractionTarget(el) {
+    if (!el || !el.closest) return false;
+    return !!el.closest("input,textarea,select,[contenteditable='true']");
   }
 
   function __pgStop(ev) {
@@ -71,27 +65,24 @@ function pgApplyGutterSize(wrapEl) {
     if (typeof ev.stopImmediatePropagation === "function") ev.stopImmediatePropagation();
   }
 
-  // Capture DOWN to prevent drag/selection from starting on inputs
+  // Capture DOWN to prevent drag/selection from starting on form fields
   document.addEventListener("pointerdown", (ev) => {
-    const t = ev.target;
-    if (__pgIsFormField(t) || __pgIsInLayoutEditor(t)) __pgStop(ev);
+    if (__pgIsFormInteractionTarget(ev.target)) __pgStop(ev);
   }, true);
 
   document.addEventListener("touchstart", (ev) => {
-    const t = ev.target;
-    if (__pgIsFormField(t) || __pgIsInLayoutEditor(t)) __pgStop(ev);
+    if (__pgIsFormInteractionTarget(ev.target)) __pgStop(ev);
     // Important: do NOT preventDefault here; we want the browser to focus the field.
   }, { capture: true, passive: true });
 
   // Capture CLICK/END too—some handlers select/re-render on click or touchend and will blur focused fields.
   document.addEventListener("click", (ev) => {
-    const t = ev.target;
-    if (__pgIsFormField(t) || __pgIsInLayoutEditor(t)) __pgStop(ev);
+    if (__pgIsFormInteractionTarget(ev.target)) __pgStop(ev);
   }, true);
 
   document.addEventListener("touchend", (ev) => {
-    const t = ev.target;
-    if (__pgIsFormField(t) || __pgIsInLayoutEditor(t)) __pgStop(ev);
+    if (__pgIsFormInteractionTarget(ev.target)) __pgStop(ev);
+  }, { capture: true, passive: true });
   }, { capture: true, passive: true });
 
   "use strict";
