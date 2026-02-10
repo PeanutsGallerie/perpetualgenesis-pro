@@ -2606,10 +2606,20 @@ button[onclick*="deleteInventoryItem"]:hover {
 }
 
 
-/* Mini button used in layout summary collapsible headers */
-#layout .pg-mini-btn{
-  padding: 4px 10px;
-  font-size: 12px;
-  border-radius: 10px;
-  cursor: pointer;
+/* ===============================
+   MOBILE KEYBOARD EDIT FIX (Layout toolbars)
+   Keeps inputs editable without iOS zoom + provides breathing room
+   =============================== */
+@media (max-width: 768px) {
+  #bedOffsetControls input,
+  #bedOffsetControls select,
+  #bedOffsetControls textarea,
+  #obstacleControls input,
+  #obstacleControls select,
+  #obstacleControls textarea,
+  .obstacle-row input,
+  .obstacle-row select,
+  .obstacle-row textarea {
+    font-size: 16px;
+  }
 }
