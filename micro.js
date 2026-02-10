@@ -49,6 +49,51 @@ function pgApplyGutterSize(wrapEl) {
 //  - prevents Safari/iOS pinch-zoom within the viewport
 
 (function () {
+
+  // ───────────────────────────────────────────────────────────────
+  // Mobile input focus guard (prevents keyboard opening then closing)
+  // Stops layout/canvas handlers from stealing the tap/click that focuses inputs.
+  // ───────────────────────────────────────────────────────────────
+  function __pgIsFormField(el) {
+    if (!el) return false;
+    const t = el.tagName;
+    return (t === "INPUT" || t === "TEXTAREA" || t === "SELECT" || !!el.isContentEditable);
+  }
+
+  function __pgIsInLayoutEditor(el) {
+    try {
+      return !!(el && el.closest && (el.closest("#selectedBedPanel") || el.closest("#bedOffsetControls") || el.closest("#obstacleControls") || el.closest(".obstacle-row")));
+    } catch (e) { return false; }
+  }
+
+  function __pgStop(ev) {
+    ev.stopPropagation();
+    if (typeof ev.stopImmediatePropagation === "function") ev.stopImmediatePropagation();
+  }
+
+  // Capture DOWN to prevent drag/selection from starting on inputs
+  document.addEventListener("pointerdown", (ev) => {
+    const t = ev.target;
+    if (__pgIsFormField(t) || __pgIsInLayoutEditor(t)) __pgStop(ev);
+  }, true);
+
+  document.addEventListener("touchstart", (ev) => {
+    const t = ev.target;
+    if (__pgIsFormField(t) || __pgIsInLayoutEditor(t)) __pgStop(ev);
+    // Important: do NOT preventDefault here; we want the browser to focus the field.
+  }, { capture: true, passive: true });
+
+  // Capture CLICK/END too—some handlers select/re-render on click or touchend and will blur focused fields.
+  document.addEventListener("click", (ev) => {
+    const t = ev.target;
+    if (__pgIsFormField(t) || __pgIsInLayoutEditor(t)) __pgStop(ev);
+  }, true);
+
+  document.addEventListener("touchend", (ev) => {
+    const t = ev.target;
+    if (__pgIsFormField(t) || __pgIsInLayoutEditor(t)) __pgStop(ev);
+  }, { capture: true, passive: true });
+
   "use strict";
 
   function debounce(fn, wait) {
@@ -605,11 +650,6 @@ updateZoomLimits();
       const els = window.__pgMicroZoomEls;
       if (!els || !els.viewport || !els.canvas || !els.inner) return;
 
-      // If the user is editing a text field, do not capture gestures.
-      try {
-        if (els.viewport && (els.viewport.dataset.pgEditing === '1' || window.__pgMicroEditing)) return;
-      } catch (e) {}
-
       // Only act when layout is visible
       if (!isLayoutVisible()) return;
 
@@ -739,125 +779,11 @@ updateZoomLimits();
     }
   }
 
-
-// --- Mobile keyboard + form editing assist (prevents "keyboard fights the page") ---
-function installMobileKeyboardAssist() {
-  if (window.__pgMicroKeyboardAssistInstalled) return;
-  window.__pgMicroKeyboardAssistInstalled = true;
-
-  // Only relevant on small screens (touch devices)
-  const bp = PG_MICRO_CFG.mobileBreakpointPx ?? 768;
-  const isSmallScreen = () => (window.innerWidth || 0) <= bp;
-
-  const vv = window.visualViewport || null;
-  let prevBodyPad = "";
-
-  function setEditing(on) {
-    try { window.__pgMicroEditing = !!on; } catch (e) {}
-    const vp = document.getElementById("propertyViewport");
-    if (vp) {
-      // While editing text, allow the page to scroll normally and avoid capturing gestures.
-      vp.dataset.pgEditing = on ? "1" : "";
-    }
-  }
-
-  function applyBottomPadding(px) {
-    try {
-      if (!document.body) return;
-      if (!prevBodyPad) prevBodyPad = document.body.style.paddingBottom || "";
-      document.body.style.paddingBottom = (px > 0 ? (px + "px") : prevBodyPad);
-    } catch (e) {}
-  }
-
-  function clearBottomPadding() {
-    try {
-      if (!document.body) return;
-      document.body.style.paddingBottom = prevBodyPad || "";
-    } catch (e) {}
-    prevBodyPad = "";
-  }
-
-  function scrollFieldIntoView(el) {
-    try {
-      if (!el || !el.scrollIntoView) return;
-      // Ensure the focused element is visible above the keyboard.
-      el.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
-    } catch (e) {}
-  }
-
-  // iOS: avoid "zoom on focus" by ensuring 16px+ font size on inputs in the layout toolbars
-  function ensureNoZoomCSS() {
-    if (document.getElementById("pgMicroNoZoomStyles")) return;
-    const st = document.createElement("style");
-    st.id = "pgMicroNoZoomStyles";
-    st.textContent = `
-      /* Prevent iOS focus-zoom on inputs inside layout toolbars */
-      #bedOffsetControls input, #bedOffsetControls select, #bedOffsetControls textarea,
-      #obstacleControls input, #obstacleControls select, #obstacleControls textarea,
-      .obstacle-row input, .obstacle-row select, .obstacle-row textarea {
-        font-size: 16px !important;
-      }
-    `;
-    document.head.appendChild(st);
-  }
-
-  ensureNoZoomCSS();
-
-  function isLayoutFormField(t) {
-    if (!t || !t.closest) return false;
-    return !!t.closest("#bedOffsetControls, #obstacleControls, .obstacle-row");
-  }
-
-  // When any toolbar input gets focus, mark "editing" and make room for the keyboard.
-  document.addEventListener("focusin", (e) => {
-    if (!isSmallScreen()) return;
-    const t = e.target;
-    if (!isLayoutFormField(t)) return;
-    setEditing(true);
-
-    // Defer scroll so browser has time to open the keyboard.
-    setTimeout(() => scrollFieldIntoView(t), 50);
-    setTimeout(() => scrollFieldIntoView(t), 250);
-
-    // visualViewport gives us the real keyboard overlap.
-    if (vv) {
-      const overlap = Math.max(0, (window.innerHeight || 0) - (vv.height || 0) - (vv.offsetTop || 0));
-      // add a little extra breathing room
-      applyBottomPadding(overlap + 16);
-    }
-  }, true);
-
-  document.addEventListener("focusout", (e) => {
-    const t = e.target;
-    if (!isLayoutFormField(t)) return;
-    // Let focus move between fields without flicker.
-    setTimeout(() => {
-      const active = document.activeElement;
-      if (isLayoutFormField(active)) return;
-      setEditing(false);
-      clearBottomPadding();
-    }, 0);
-  }, true);
-
-  // Keep padding accurate while the keyboard animates / rotates.
-  if (vv) {
-    const onVV = () => {
-      if (!isSmallScreen()) return;
-      if (!window.__pgMicroEditing) return;
-      const overlap = Math.max(0, (window.innerHeight || 0) - (vv.height || 0) - (vv.offsetTop || 0));
-      applyBottomPadding(overlap + 16);
-    };
-    vv.addEventListener("resize", onVV);
-    vv.addEventListener("scroll", onVV);
-  }
-}
-
   // --- Boot ---
   function boot() {
     installLayoutResizeReRender();
     installDoubleTapRotate();
     installPropertyViewportZoom();
-    installMobileKeyboardAssist();
 
     // If layout already rendered before micro boot, rebind now
     try {
