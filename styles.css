@@ -2606,20 +2606,25 @@ button[onclick*="deleteInventoryItem"]:hover {
 }
 
 
-/* ===============================
-   MOBILE KEYBOARD EDIT FIX (Layout toolbars)
-   Keeps inputs editable without iOS zoom + provides breathing room
-   =============================== */
+/* ───────────────────────────────────────────────────────────────
+   Mobile keyboard usability (Layout editor inputs)
+   Keeps inputs usable when virtual keyboard opens.
+   Safe: only affects Layout tab + editor controls.
+   ─────────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
-  #bedOffsetControls input,
-  #bedOffsetControls select,
-  #bedOffsetControls textarea,
-  #obstacleControls input,
-  #obstacleControls select,
-  #obstacleControls textarea,
-  .obstacle-row input,
-  .obstacle-row select,
-  .obstacle-row textarea {
-    font-size: 16px;
+  #selectedBedPanel,
+  .selected-bed-panel,
+  #bedOffsetControls,
+  #obstacleControls {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: var(--kbpad, 0px);
+    max-height: calc(var(--vvh, 100vh) - 140px);
+  }
+
+  #layout input,
+  #layout textarea,
+  #layout select {
+    font-size: 16px; /* prevents iOS auto-zoom on focus */
   }
 }
