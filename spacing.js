@@ -108,6 +108,29 @@ function spacingQueryAll(selector) {
   return root ? Array.from(root.querySelectorAll(selector)) : Array.from(document.querySelectorAll(selector));
 }
 
+
+// ───────────────────────────────────────────────────────────────
+// Pro gates for Spacing tool
+// ───────────────────────────────────────────────────────────────
+function spacingRequire(featureKey, message) {
+  try {
+    if (typeof window.pgRequire === "function") {
+      return !!window.pgRequire(featureKey, message || "This feature is available in Pro.");
+    }
+  } catch (e) {}
+  // If pgRequire is not present (internal/dev), allow.
+  return true;
+}
+
+function renderProLockedNote(title, body) {
+  return `
+    <div style="margin-top:14px; padding:10px 12px; border:1px solid rgba(255,255,255,.12); border-radius:10px; opacity:.92;">
+      <strong>${title}</strong><br>
+      <div style="margin-top:6px; opacity:.85;">${body}</div>
+    </div>
+  `;
+}
+
 /* =========================
    Spacing UI: live style toggle
    ========================= */
@@ -451,7 +474,11 @@ function calculateSpacing() {
   }
 
   const compareEnabled = !!spacingById('spacingCompareToggle')?.checked;
-  const cropB = compareEnabled ? (spacingById('spacingCropB')?.value || "") : "";
+
+// Pro gate: Compare (block compare output if not entitled)
+const compareAllowed = compareEnabled ? spacingRequire("spacingCompare", "Compare two crops is available in Pro.") : false;
+
+const cropB = (compareEnabled && compareAllowed) ? (spacingById('spacingCropB')?.value || "") : "";
 
   const style = spacingQuery('input[name="style"]:checked')?.value || "sqft";
   const intensity = spacingById('spacingIntensity')?.value || "standard";
@@ -495,7 +522,7 @@ function calculateSpacing() {
 
   // Compare crop B (optional)
   let compareHtml = "";
-  if (compareEnabled && cropB && spacingData[cropB]) {
+  if (compareEnabled && compareAllowed && cropB && spacingData[cropB]) {
     const dataB = spacingData[cropB];
     const plantsB = Math.max(1, Math.round((areaSqFt * dataB.sqft) * factor));
     const seedsB = Math.max(1, Math.round(plantsB * 1.2));
@@ -529,7 +556,9 @@ function calculateSpacing() {
         </div>
       </div>
     `;
-  } else if (compareEnabled && cropB && !spacingData[cropB]) {
+  } else if (compareEnabled && !compareAllowed) {
+    compareHtml = renderProLockedNote("Compare (Pro)", "Upgrade to compare two crops side-by-side.");
+  } else if (compareEnabled && compareAllowed && cropB && !spacingData[cropB]) {
     compareHtml = `<div style="margin-top:14px; opacity:.85;"><em>Select a valid comparison crop.</em></div>`;
   }
 
@@ -538,7 +567,13 @@ function calculateSpacing() {
   const batches = Math.round(safeNumber(spacingById('successionBatches')?.value) || 6);
   const intervalDays = Math.round(safeNumber(spacingById('successionIntervalDays')?.value) || 0);
 
-  const succ = buildSuccessionSchedule(crop, startDateStr, batches, intervalDays);
+  // Pro gate: Succession (only show schedule output if user is using it)
+  const usingSuccession = !!startDateStr || (batches && batches > 1) || (intervalDays && intervalDays > 0);
+  const successionAllowed = usingSuccession ? spacingRequire("spacingSuccession", "Succession Planner is available in Pro.") : true;
+
+  const succ = successionAllowed
+    ? buildSuccessionSchedule(crop, startDateStr, batches, intervalDays)
+    : { html: renderProLockedNote("Succession Planner (Pro)", "Upgrade to generate a succession schedule."), effectiveInterval: intervalDays };
 
   // Notes (kept independent)
   const notes = spacingById('spacingNotes')?.value || "";
@@ -856,5 +891,22 @@ document.addEventListener('DOMContentLoaded', () => {
   const compareBox = spacingById("spacingCompareBox");
   if (compareToggle && compareBox) {
     compareBox.style.display = compareToggle.checked ? "" : "none";
+
+    // Keep compare box in sync + gate when enabling
+    compareToggle.addEventListener("change", () => {
+      if (compareToggle.checked) {
+        const ok = spacingRequire("spacingCompare", "Compare two crops is available in Pro.");
+        if (!ok) {
+          compareToggle.checked = false;
+          compareBox.style.display = "none";
+          saveSpacingState();
+          return;
+        }
+      }
+      compareBox.style.display = compareToggle.checked ? "" : "none";
+      saveSpacingState();
+    });
   }
+
+  // Gate Succession output on calculate (UI stays visible, output is locked if not Pro)
 });
