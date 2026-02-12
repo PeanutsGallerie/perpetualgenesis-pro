@@ -1401,41 +1401,67 @@ input {
 </svg>");
 }
 
-/* ---------- WEEDS ---------- */
+/* ---------- WEEDS (tufts, randomized-looking pattern) ---------- */
 .property-obstacle-block[data-type="weeds"]::after{
-  background-image: url("data:image/svg+xml;utf8,\
-<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 80'>\
-<rect width='120' height='80' fill='rgba(0,0,0,0)'/>\
-<text x='60' y='54' text-anchor='middle' font-size='64'>🌿</text>\
-</svg>");
+  background-image:
+    radial-gradient(circle at 20% 35%, rgba(90,200,90,0.85) 0 3px, transparent 4px),
+    radial-gradient(circle at 28% 42%, rgba(50,160,60,0.85) 0 2px, transparent 3px),
+    radial-gradient(circle at 70% 55%, rgba(70,190,80,0.85) 0 3px, transparent 4px),
+    radial-gradient(circle at 62% 48%, rgba(40,140,55,0.85) 0 2px, transparent 3px),
+    radial-gradient(circle at 45% 70%, rgba(80,205,85,0.85) 0 3px, transparent 4px),
+    radial-gradient(circle at 52% 62%, rgba(35,130,50,0.85) 0 2px, transparent 3px),
+    linear-gradient(to bottom, rgba(25,60,25,0.20), rgba(0,0,0,0.15));
+  background-size: 26px 26px;
+  background-repeat: repeat;
+  background-position: 0 0;
 }
 
-/* ---------- FLOWERS ---------- */
+/* ---------- FLOWERS (petals + centers) ---------- */
 .property-obstacle-block[data-type="flowers"]::after{
-  background-image: url("data:image/svg+xml;utf8,\
-<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 80'>\
-<rect width='120' height='80' fill='rgba(0,0,0,0)'/>\
-<text x='60' y='54' text-anchor='middle' font-size='64'>🌸</text>\
-</svg>");
+  background-image:
+    /* petals */
+    radial-gradient(circle, rgba(255,120,180,0.85) 0 2px, transparent 3px) 0 0 / 28px 28px,
+    radial-gradient(circle, rgba(255,190,70,0.85) 0 2px, transparent 3px) 14px 6px / 28px 28px,
+    radial-gradient(circle, rgba(170,140,255,0.85) 0 2px, transparent 3px) 8px 18px / 28px 28px,
+    /* centers */
+    radial-gradient(circle, rgba(255,255,190,0.9) 0 1px, transparent 2px) 0 0 / 28px 28px,
+    radial-gradient(circle, rgba(255,255,190,0.9) 0 1px, transparent 2px) 14px 6px / 28px 28px,
+    radial-gradient(circle, rgba(255,255,190,0.9) 0 1px, transparent 2px) 8px 18px / 28px 28px,
+    /* ground tint */
+    linear-gradient(to bottom, rgba(20,55,20,0.18), rgba(0,0,0,0.14));
+  background-repeat: repeat;
+  background-position: 0 0;
 }
 
-/* ---------- STEPPING STONES ---------- */
-.property-obstacle-block[data-type="stepping_stones"]::after{
-  background-image: url("data:image/svg+xml;utf8,\
-<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 140'>\
-<rect width='220' height='140' fill='rgba(0,0,0,0)'/>\
-<g fill='%23cfcfcf' fill-opacity='0.95' stroke='%23000000' stroke-opacity='0.18' stroke-width='4'>\
-<ellipse cx='55' cy='85' rx='28' ry='18'/>\
-<ellipse cx='105' cy='60' rx='30' ry='19'/>\
-<ellipse cx='155' cy='88' rx='30' ry='18'/>\
-</g>\
-<g fill='%23000000' fill-opacity='0.10'>\
-<ellipse cx='58' cy='92' rx='26' ry='14'/>\
-<ellipse cx='108' cy='67' rx='28' ry='15'/>\
-<ellipse cx='158' cy='95' rx='28' ry='14'/>\
-</g>\
-</svg>");
+
+/* ---------- PATH (stepping stones) ---------- */
+.property-obstacle-block[data-type="path"]{
+  border-radius: 14px;
+  overflow: hidden;
 }
+
+.property-obstacle-block[data-type="path"]::after{
+  background-image:
+    /* stones marching along the long axis */
+    radial-gradient(circle at 18% 50%, rgba(210,210,210,0.92) 0 10px, rgba(120,120,120,0.35) 11px, transparent 12px),
+    radial-gradient(circle at 42% 50%, rgba(210,210,210,0.92) 0 10px, rgba(120,120,120,0.35) 11px, transparent 12px),
+    radial-gradient(circle at 66% 50%, rgba(210,210,210,0.92) 0 10px, rgba(120,120,120,0.35) 11px, transparent 12px),
+    radial-gradient(circle at 90% 50%, rgba(210,210,210,0.92) 0 10px, rgba(120,120,120,0.35) 11px, transparent 12px),
+    /* base dirt */
+    linear-gradient(to bottom, rgba(65,45,25,0.32), rgba(20,15,10,0.22));
+  background-size: 140px 100%;
+  background-repeat: repeat;
+  background-position: 0 0;
+}
+
+.property-obstacle-block[data-type="path"]::before{
+  /* subtle grit */
+  opacity: 0.45; /* turn on */
+  background:
+    radial-gradient(circle at 30% 40%, rgba(255,255,255,0.10) 0 1px, transparent 2px) 0 0 / 18px 18px,
+    radial-gradient(circle at 70% 60%, rgba(0,0,0,0.12) 0 1px, transparent 2px) 0 0 / 22px 22px;
+}
+
 
 /* ---------- MULCH ---------- */
 .property-obstacle-block[data-type="mulch"]::after{
@@ -2759,3 +2785,4 @@ button[onclick*="deleteInventoryItem"]:hover {
     font-size: 16px; /* prevents iOS auto-zoom on focus */
   }
 }
+
