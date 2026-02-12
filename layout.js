@@ -4552,7 +4552,14 @@ function renderObstacleControls(bedCount) {
         <option value="pond">Pond</option>
         <option value="compost">Compost</option>
         <option value="fence">Fence</option>
-        <option value="other">Other</option>
+        <option value="weeds">Weeds</option>
+        <option value="flowers">Flowers</option>
+        <option value="stepping_stones">Stepping Stones</option>
+        <option value="mulch">Mulch</option>
+        <option value="bush">Bush</option>
+        <option value="rock">Rock</option>
+        <option value="path">Path</option>
+
       </select>
       <input type="number" step="1" min="1" data-oi="${i}" data-k="wFt" value="${Number.isFinite(o.wFt) ? o.wFt : 10}">
       <input type="number" step="1" min="1" data-oi="${i}" data-k="lFt" value="${Number.isFinite(o.lFt) ? o.lFt : 10}">
