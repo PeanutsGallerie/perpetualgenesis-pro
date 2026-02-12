@@ -2,5 +2,8 @@
 https://YOUR-PRO-SITE.netlify.app/*  https://pro.perpetualgenesis.app/:splat  301!
 http://YOUR-PRO-SITE.netlify.app/*   https://pro.perpetualgenesis.app/:splat  301!
 
+# Android App Links verification (MUST be above SPA fallback)
+ /.well-known/assetlinks.json  /.well-known/assetlinks.json  200
+
 # SPA fallback (safe)
  /*  /index.html  200
