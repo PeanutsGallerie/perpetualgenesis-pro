@@ -1401,66 +1401,132 @@ input {
 </svg>");
 }
 
-/* ---------- WEEDS (tufts, randomized-looking pattern) ---------- */
+/* ---------- WEEDS: tufts/grass patch (ground growth) ---------- */
+.property-obstacle-block[data-type="weeds"]{
+  border-radius: 16px;
+  overflow: hidden;
+}
+
 .property-obstacle-block[data-type="weeds"]::after{
   background-image:
-    radial-gradient(circle at 20% 35%, rgba(90,200,90,0.85) 0 3px, transparent 4px),
-    radial-gradient(circle at 28% 42%, rgba(50,160,60,0.85) 0 2px, transparent 3px),
-    radial-gradient(circle at 70% 55%, rgba(70,190,80,0.85) 0 3px, transparent 4px),
-    radial-gradient(circle at 62% 48%, rgba(40,140,55,0.85) 0 2px, transparent 3px),
-    radial-gradient(circle at 45% 70%, rgba(80,205,85,0.85) 0 3px, transparent 4px),
-    radial-gradient(circle at 52% 62%, rgba(35,130,50,0.85) 0 2px, transparent 3px),
-    linear-gradient(to bottom, rgba(25,60,25,0.20), rgba(0,0,0,0.15));
-  background-size: 26px 26px;
-  background-repeat: repeat;
-  background-position: 0 0;
-}
+    /* tufts */
+    radial-gradient(circle at 18% 30%, rgba(70,190,85,0.85) 0 2px, transparent 2.1px),
+    radial-gradient(circle at 22% 38%, rgba(40,150,60,0.85) 0 1.6px, transparent 1.7px),
+    radial-gradient(circle at 28% 26%, rgba(80,205,90,0.85) 0 2.2px, transparent 2.3px),
 
-/* ---------- FLOWERS (petals + centers) ---------- */
-.property-obstacle-block[data-type="flowers"]::after{
-  background-image:
-    /* petals */
-    radial-gradient(circle, rgba(255,120,180,0.85) 0 2px, transparent 3px) 0 0 / 28px 28px,
-    radial-gradient(circle, rgba(255,190,70,0.85) 0 2px, transparent 3px) 14px 6px / 28px 28px,
-    radial-gradient(circle, rgba(170,140,255,0.85) 0 2px, transparent 3px) 8px 18px / 28px 28px,
-    /* centers */
-    radial-gradient(circle, rgba(255,255,190,0.9) 0 1px, transparent 2px) 0 0 / 28px 28px,
-    radial-gradient(circle, rgba(255,255,190,0.9) 0 1px, transparent 2px) 14px 6px / 28px 28px,
-    radial-gradient(circle, rgba(255,255,190,0.9) 0 1px, transparent 2px) 8px 18px / 28px 28px,
+    radial-gradient(circle at 54% 34%, rgba(70,190,85,0.85) 0 2px, transparent 2.1px),
+    radial-gradient(circle at 58% 42%, rgba(40,150,60,0.85) 0 1.6px, transparent 1.7px),
+    radial-gradient(circle at 64% 28%, rgba(80,205,90,0.85) 0 2.2px, transparent 2.3px),
+
+    radial-gradient(circle at 78% 32%, rgba(70,190,85,0.85) 0 2px, transparent 2.1px),
+    radial-gradient(circle at 82% 40%, rgba(40,150,60,0.85) 0 1.6px, transparent 1.7px),
+    radial-gradient(circle at 88% 26%, rgba(80,205,90,0.85) 0 2.2px, transparent 2.3px),
+
+    /* grass blades (fine) */
+    repeating-linear-gradient(75deg,
+      rgba(60,170,80,0.12) 0 1px,
+      transparent 1px 7px),
+    repeating-linear-gradient(110deg,
+      rgba(30,120,55,0.10) 0 1px,
+      transparent 1px 9px),
+
     /* ground tint */
-    linear-gradient(to bottom, rgba(20,55,20,0.18), rgba(0,0,0,0.14));
+    linear-gradient(0deg, rgba(0,0,0,0.18), rgba(0,0,0,0.22));
+  background-size: 60px 60px, 60px 60px, 60px 60px,
+                   60px 60px, 60px 60px, 60px 60px,
+                   60px 60px, 60px 60px, 60px 60px,
+                   22px 22px, 26px 26px,
+                   cover;
   background-repeat: repeat;
-  background-position: 0 0;
+  opacity: 0.95;
+}
+
+.property-obstacle-block[data-type="weeds"]::before{
+  opacity: 1;
+  background:
+    radial-gradient(circle at 50% 50%,
+      rgba(0,0,0,0.00) 0 42%,
+      rgba(0,0,0,0.22) 75%,
+      rgba(0,0,0,0.34) 100%);
 }
 
 
-/* ---------- PATH (stepping stones) ---------- */
+/* ---------- FLOWERS: wildflower patch (ground growth) ---------- */
+.property-obstacle-block[data-type="flowers"]{
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.property-obstacle-block[data-type="flowers"]::after{
+  /* many small blooms + stems, repeated */
+  background-image:
+    /* bloom dots */
+    radial-gradient(circle at 12% 18%, rgba(255,120,170,0.85) 0 1.6px, transparent 1.7px),
+    radial-gradient(circle at 18% 28%, rgba(255,220,120,0.85) 0 1.4px, transparent 1.5px),
+    radial-gradient(circle at 26% 14%, rgba(190,150,255,0.85) 0 1.5px, transparent 1.6px),
+    radial-gradient(circle at 36% 22%, rgba(255,120,170,0.80) 0 1.3px, transparent 1.4px),
+    radial-gradient(circle at 44% 16%, rgba(255,220,120,0.80) 0 1.2px, transparent 1.3px),
+    radial-gradient(circle at 52% 26%, rgba(190,150,255,0.80) 0 1.4px, transparent 1.5px),
+
+    radial-gradient(circle at 62% 18%, rgba(255,120,170,0.80) 0 1.4px, transparent 1.5px),
+    radial-gradient(circle at 70% 28%, rgba(255,220,120,0.80) 0 1.2px, transparent 1.3px),
+    radial-gradient(circle at 78% 14%, rgba(190,150,255,0.80) 0 1.5px, transparent 1.6px),
+    radial-gradient(circle at 86% 22%, rgba(255,120,170,0.78) 0 1.3px, transparent 1.4px),
+    radial-gradient(circle at 92% 16%, rgba(255,220,120,0.78) 0 1.2px, transparent 1.3px),
+
+    /* faint stems */
+    linear-gradient(90deg, rgba(70,160,85,0.28) 0 1px, transparent 1px 10px),
+    linear-gradient(0deg, rgba(40,120,55,0.18), rgba(0,0,0,0.18));
+  background-size: 56px 56px, 56px 56px, 56px 56px, 56px 56px, 56px 56px, 56px 56px,
+                   56px 56px, 56px 56px, 56px 56px, 56px 56px, 56px 56px,
+                   28px 28px, cover;
+  background-repeat: repeat;
+  background-position: 0 0;
+  opacity: 0.95;
+}
+
+/* soften edges so it blends into ground */
+.property-obstacle-block[data-type="flowers"]::before{
+  opacity: 1;
+  background:
+    radial-gradient(circle at 50% 50%,
+      rgba(0,0,0,0.00) 0 45%,
+      rgba(0,0,0,0.25) 75%,
+      rgba(0,0,0,0.35) 100%);
+}
+
+
+
+/* ---------- PATH: directional stepping stones (ground) ---------- */
 .property-obstacle-block[data-type="path"]{
   border-radius: 14px;
   overflow: hidden;
 }
 
+/* Directional pattern (stones in a line) */
 .property-obstacle-block[data-type="path"]::after{
   background-image:
-    /* stones marching along the long axis */
-    radial-gradient(circle at 18% 50%, rgba(210,210,210,0.92) 0 10px, rgba(120,120,120,0.35) 11px, transparent 12px),
-    radial-gradient(circle at 42% 50%, rgba(210,210,210,0.92) 0 10px, rgba(120,120,120,0.35) 11px, transparent 12px),
-    radial-gradient(circle at 66% 50%, rgba(210,210,210,0.92) 0 10px, rgba(120,120,120,0.35) 11px, transparent 12px),
-    radial-gradient(circle at 90% 50%, rgba(210,210,210,0.92) 0 10px, rgba(120,120,120,0.35) 11px, transparent 12px),
-    /* base dirt */
-    linear-gradient(to bottom, rgba(65,45,25,0.32), rgba(20,15,10,0.22));
-  background-size: 140px 100%;
+    /* stones along centerline */
+    radial-gradient(circle at 20% 50%, rgba(210,210,210,0.92) 0 9px, rgba(0,0,0,0.16) 10px, transparent 11px),
+    radial-gradient(circle at 45% 50%, rgba(210,210,210,0.92) 0 9px, rgba(0,0,0,0.16) 10px, transparent 11px),
+    radial-gradient(circle at 70% 50%, rgba(210,210,210,0.92) 0 9px, rgba(0,0,0,0.16) 10px, transparent 11px),
+    radial-gradient(circle at 95% 50%, rgba(210,210,210,0.92) 0 9px, rgba(0,0,0,0.16) 10px, transparent 11px),
+
+    /* dirt base */
+    linear-gradient(0deg, rgba(75,52,30,0.38), rgba(20,15,10,0.22));
+  background-size: 160px 100%;
   background-repeat: repeat;
   background-position: 0 0;
+  opacity: 0.98;
 }
 
 .property-obstacle-block[data-type="path"]::before{
-  /* subtle grit */
-  opacity: 0.45; /* turn on */
+  opacity: 0.55;
   background:
-    radial-gradient(circle at 30% 40%, rgba(255,255,255,0.10) 0 1px, transparent 2px) 0 0 / 18px 18px,
+    radial-gradient(circle at 30% 30%, rgba(255,255,255,0.10) 0 1px, transparent 2px) 0 0 / 16px 16px,
     radial-gradient(circle at 70% 60%, rgba(0,0,0,0.12) 0 1px, transparent 2px) 0 0 / 22px 22px;
 }
+
 
 
 /* ---------- MULCH ---------- */
@@ -2785,4 +2851,5 @@ button[onclick*="deleteInventoryItem"]:hover {
     font-size: 16px; /* prevents iOS auto-zoom on focus */
   }
 }
+
 
