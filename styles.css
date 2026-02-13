@@ -1365,7 +1365,8 @@ input {
    /img/obstacles/pond_sprite.png
    /img/obstacles/shed_sprite.png
    /img/obstacles/tree_sprite.png
-   /img/obstacles/house_sprite.png
+   /img/obstacles/house_sprite_front_facing.png
+
    /img/obstacles/compost_sprite.png
    /img/obstacles/stepping_stones_tile.png
    ========================================================= */
@@ -1383,7 +1384,8 @@ input {
 .property-obstacle-block[data-type="pond"]::after{ background-image:url("/img/obstacles/pond_sprite.png") !important; background-repeat:no-repeat !important; background-size:contain !important; background-position:center !important; }
 .property-obstacle-block[data-type="shed"]::after{ background-image:url("/img/obstacles/shed_sprite.png") !important; background-repeat:no-repeat !important; background-size:contain !important; background-position:center !important; }
 .property-obstacle-block[data-type="tree"]::after{ background-image:url("/img/obstacles/tree_sprite.png") !important; background-repeat:no-repeat !important; background-size:contain !important; background-position:center !important; }
-.property-obstacle-block[data-type="house"]::after{ background-image:url("/img/obstacles/house_sprite.png") !important; background-repeat:no-repeat !important; background-size:contain !important; background-position:center !important; }
+.property-obstacle-block[data-type="house"]::after{ background-image:url("/img/obstacles/house_sprite_front_facing.png
+") !important; background-repeat:no-repeat !important; background-size:contain !important; background-position:center !important; }
 .property-obstacle-block[data-type="compost"]::after{ background-image:url("/img/obstacles/compost_sprite.png") !important; background-repeat:no-repeat !important; background-size:contain !important; background-position:center !important; }
 
 
@@ -2639,6 +2641,7 @@ button[onclick*="deleteInventoryItem"]:hover {
     font-size: 16px; /* prevents iOS auto-zoom on focus */
   }
 }
+
 
 
 
