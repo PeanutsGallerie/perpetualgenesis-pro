@@ -1352,56 +1352,40 @@ input {
    padding: 3px 8px;      
 }
 
-/* ===== Obstacle PNG skins (per-app assets) ===== */
+/* =========================================================
+   Obstacle PNG skins (per-app assets) — CLEAN SINGLE BLOCK
+   Put this at the VERY BOTTOM of styles.css / Prostyles.css
+   Required files in each app:
+   /img/obstacles/flowers_tile.png
+   /img/obstacles/weeds_tile.png
+   /img/obstacles/mulch_tile.png
+   /img/obstacles/brick_path_tile.png
+   /img/obstacles/bush_sprite.png
+   /img/obstacles/rock_sprite.png
+   /img/obstacles/pond_sprite.png
+   /img/obstacles/shed_sprite.png
+   /img/obstacles/tree_sprite.png
+   /img/obstacles/house_sprite.png
+   /img/obstacles/compost_sprite.png
+   /img/obstacles/stepping_stones_tile.png
+   ========================================================= */
+
+/* Tiles */
 .property-obstacle-block[data-type="flowers"]::after{ background-image:url("/img/obstacles/flowers_tile.png") !important; background-repeat:repeat !important; background-size:256px 256px !important; background-position:0 0 !important; }
 .property-obstacle-block[data-type="weeds"]::after{ background-image:url("/img/obstacles/weeds_tile.png") !important; background-repeat:repeat !important; background-size:256px 256px !important; background-position:0 0 !important; }
 .property-obstacle-block[data-type="mulch"]::after{ background-image:url("/img/obstacles/mulch_tile.png") !important; background-repeat:repeat !important; background-size:256px 256px !important; background-position:0 0 !important; }
 .property-obstacle-block[data-type="path"]::after{ background-image:url("/img/obstacles/brick_path_tile.png") !important; background-repeat:repeat !important; background-size:256px 256px !important; background-position:0 0 !important; }
+.property-obstacle-block[data-type="stepping_stones"]::after{ background-image:url("/img/obstacles/stepping_stones_tile.png") !important; background-repeat:repeat !important; background-size:256px 256px !important; background-position:0 0 !important; }
 
+/* Sprites */
 .property-obstacle-block[data-type="bush"]::after{ background-image:url("/img/obstacles/bush_sprite.png") !important; background-repeat:no-repeat !important; background-size:contain !important; background-position:center !important; }
 .property-obstacle-block[data-type="rock"]::after{ background-image:url("/img/obstacles/rock_sprite.png") !important; background-repeat:no-repeat !important; background-size:contain !important; background-position:center !important; }
 .property-obstacle-block[data-type="pond"]::after{ background-image:url("/img/obstacles/pond_sprite.png") !important; background-repeat:no-repeat !important; background-size:contain !important; background-position:center !important; }
+.property-obstacle-block[data-type="shed"]::after{ background-image:url("/img/obstacles/shed_sprite.png") !important; background-repeat:no-repeat !important; background-size:contain !important; background-position:center !important; }
+.property-obstacle-block[data-type="tree"]::after{ background-image:url("/img/obstacles/tree_sprite.png") !important; background-repeat:no-repeat !important; background-size:contain !important; background-position:center !important; }
+.property-obstacle-block[data-type="house"]::after{ background-image:url("/img/obstacles/house_sprite.png") !important; background-repeat:no-repeat !important; background-size:contain !important; background-position:center !important; }
+.property-obstacle-block[data-type="compost"]::after{ background-image:url("/img/obstacles/compost_sprite.png") !important; background-repeat:no-repeat !important; background-size:contain !important; background-position:center !important; }
 
-/* ===== Shed + Tree PNG sprites ===== */
-.property-obstacle-block[data-type="shed"]::after{
-  background-image: url("/img/obstacles/shed_sprite.png") !important;
-  background-repeat: no-repeat !important;
-  background-position: center !important;
-  background-size: contain !important;
-}
-
-.property-obstacle-block[data-type="tree"]::after{
-  background-image: url("/img/obstacles/tree_sprite.png") !important;
-  background-repeat: no-repeat !important;
-  background-position: center !important;
-  background-size: contain !important;
-}
-
-/* ADD missing stepping stones (JS value is stepping_stones) */
-.property-obstacle-block[data-type="stepping_stones"]::after{
-  background-image: url("/img/obstacles/stepping_stones_tile.png") !important;
-  background-repeat: repeat !important;
-  background-size: 256px 256px !important;
-  background-position: 0 0 !important;
-}
-
-/* ADD compost PNG (if you have a compost_sprite.png) */
-.property-obstacle-block[data-type="compost"]::after{
-  background-image: url("/img/obstacles/compost_sprite.png") !important;
-  background-repeat: no-repeat !important;
-  background-position: center !important;
-  background-size: contain !important;
-}
-
-
-/* ===== House  PNG sprites ===== */
-
-.property-obstacle-block[data-type="house"]::after{
-  background-image: url("/img/obstacles/house_sprite.png") !important;
-  background-repeat: no-repeat !important;
-  background-position: center !important;
-  background-size: contain !important;
-}
 
 
 /* ---------- FENCE: pattern fill + posts overlay (scales for 5ft x 1ft) ---------- */
@@ -2655,6 +2639,7 @@ button[onclick*="deleteInventoryItem"]:hover {
     font-size: 16px; /* prevents iOS auto-zoom on focus */
   }
 }
+
 
 
 
