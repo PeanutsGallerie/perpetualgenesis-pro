@@ -1352,38 +1352,6 @@ input {
    padding: 3px 8px;      
 }
 
-
-/* ---------- SHED: BIG EMOJI FILL ---------- */
-.property-obstacle-block[data-type="shed"]::after{
-  background-image: url("data:image/svg+xml;utf8,\
-<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 80'>\
-<rect width='120' height='80' fill='rgba(0,0,0,0.0)'/>\
-<text x='60' y='52' text-anchor='middle' font-size='64'>🏚️</text>\
-</svg>");
-}
-
-/* ---------- HOUSE: BIG EMOJI FILL ---------- */
-.property-obstacle-block[data-type="house"]::after{
-  background-image: url("data:image/svg+xml;utf8,\
-<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 80'>\
-<rect width='120' height='80' fill='rgba(0,0,0,0.0)'/>\
-<text x='60' y='52' text-anchor='middle' font-size='64'>🏠</text>\
-</svg>");
-}
-
-/* ---------- TREE: keep circular look + BIG EMOJI FILL ---------- */
-.property-obstacle-block[data-type="tree"]{
-  border-radius: 999px;
-}
-.property-obstacle-block[data-type="tree"]::after{
-  border-radius: 999px;
-  background-image: url("data:image/svg+xml;utf8,\
-<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 80'>\
-<rect width='120' height='80' fill='rgba(0,0,0,0.0)'/>\
-<text x='60' y='52' text-anchor='middle' font-size='64'>🌳</text>\
-</svg>");
-}
-
 /* ---------- COMPOST: BIG EMOJI FILL ---------- */
 .property-obstacle-block[data-type="compost"]::after{
   background-image: url("data:image/svg+xml;utf8,\
@@ -1402,6 +1370,30 @@ input {
 .property-obstacle-block[data-type="bush"]::after{ background-image:url("/img/obstacles/bush_sprite.png") !important; background-repeat:no-repeat !important; background-size:contain !important; background-position:center !important; }
 .property-obstacle-block[data-type="rock"]::after{ background-image:url("/img/obstacles/rock_sprite.png") !important; background-repeat:no-repeat !important; background-size:contain !important; background-position:center !important; }
 .property-obstacle-block[data-type="pond"]::after{ background-image:url("/img/obstacles/pond_sprite.png") !important; background-repeat:no-repeat !important; background-size:contain !important; background-position:center !important; }
+
+/* ===== Shed + Tree PNG sprites ===== */
+.property-obstacle-block[data-type="Shed"]::after{
+  background-image: url("/img/obstacles/shed_sprite.png") !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  background-size: contain !important;
+}
+
+.property-obstacle-block[data-type="Tree"]::after{
+  background-image: url("/img/obstacles/tree_sprite.png") !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  background-size: contain !important;
+}
+
+/* ===== House  PNG sprites ===== */
+
+.property-obstacle-block[data-type="house"]::after{
+  background-image: url("/img/obstacles/house_sprite.png") !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  background-size: contain !important;
+}
 
 
 /* ---------- FENCE: pattern fill + posts overlay (scales for 5ft x 1ft) ---------- */
@@ -2655,6 +2647,7 @@ button[onclick*="deleteInventoryItem"]:hover {
     font-size: 16px; /* prevents iOS auto-zoom on focus */
   }
 }
+
 
 
 
