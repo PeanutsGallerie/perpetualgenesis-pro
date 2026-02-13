@@ -4550,14 +4550,11 @@ function renderObstacleControls(bedCount) {
         <option value="house">House</option>
         <option value="tree">Tree</option>
         <option value="pond">Pond</option>
-        <option value="compost">Compost</option>
         <option value="fence">Fence</option>
         <option value="weeds">Weeds</option>
         <option value="flowers">Flowers</option>
-        <option value="stepping_stones">Stepping Stones</option>
         <option value="mulch">Mulch</option>
         <option value="bush">Bush</option>
-        <option value="rock">Rock</option>
         <option value="path">Path</option>
 
       </select>
