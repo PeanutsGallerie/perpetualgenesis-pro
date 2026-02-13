@@ -1352,15 +1352,6 @@ input {
    padding: 3px 8px;      
 }
 
-/* ---------- COMPOST: BIG EMOJI FILL ---------- */
-.property-obstacle-block[data-type="compost"]::after{
-  background-image: url("data:image/svg+xml;utf8,\
-<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 80'>\
-<rect width='120' height='80' fill='rgba(0,0,0,0.0)'/>\
-<text x='60' y='52' text-anchor='middle' font-size='64'>♻️</text>\
-</svg>");
-}
-
 /* ===== Obstacle PNG skins (per-app assets) ===== */
 .property-obstacle-block[data-type="flowers"]::after{ background-image:url("/img/obstacles/flowers_tile.png") !important; background-repeat:repeat !important; background-size:256px 256px !important; background-position:0 0 !important; }
 .property-obstacle-block[data-type="weeds"]::after{ background-image:url("/img/obstacles/weeds_tile.png") !important; background-repeat:repeat !important; background-size:256px 256px !important; background-position:0 0 !important; }
@@ -1372,19 +1363,36 @@ input {
 .property-obstacle-block[data-type="pond"]::after{ background-image:url("/img/obstacles/pond_sprite.png") !important; background-repeat:no-repeat !important; background-size:contain !important; background-position:center !important; }
 
 /* ===== Shed + Tree PNG sprites ===== */
-.property-obstacle-block[data-type="Shed"]::after{
+.property-obstacle-block[data-type="shed"]::after{
   background-image: url("/img/obstacles/shed_sprite.png") !important;
   background-repeat: no-repeat !important;
   background-position: center !important;
   background-size: contain !important;
 }
 
-.property-obstacle-block[data-type="Tree"]::after{
+.property-obstacle-block[data-type="tree"]::after{
   background-image: url("/img/obstacles/tree_sprite.png") !important;
   background-repeat: no-repeat !important;
   background-position: center !important;
   background-size: contain !important;
 }
+
+/* ADD missing stepping stones (JS value is stepping_stones) */
+.property-obstacle-block[data-type="stepping_stones"]::after{
+  background-image: url("/img/obstacles/stepping_stones_tile.png") !important;
+  background-repeat: repeat !important;
+  background-size: 256px 256px !important;
+  background-position: 0 0 !important;
+}
+
+/* ADD compost PNG (if you have a compost_sprite.png) */
+.property-obstacle-block[data-type="compost"]::after{
+  background-image: url("/img/obstacles/compost_sprite.png") !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  background-size: contain !important;
+}
+
 
 /* ===== House  PNG sprites ===== */
 
@@ -2647,6 +2655,7 @@ button[onclick*="deleteInventoryItem"]:hover {
     font-size: 16px; /* prevents iOS auto-zoom on focus */
   }
 }
+
 
 
 
