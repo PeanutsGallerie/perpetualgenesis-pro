@@ -1,6 +1,6 @@
         :root {
             --bg: #000000;
-            --surface: #111111;        :root {
+            --surface: #111111;        
             --bg: #000000;
             --surface: #111111;
             --primary: #00eeff;
@@ -2635,5 +2635,4 @@ button[onclick*="deleteInventoryItem"]:hover {
   #layout select {
     font-size: 16px; /* prevents iOS auto-zoom on focus */
   }
-}
 }
