@@ -793,4 +793,5 @@ updateZoomLimits();
   } else {
     boot();
   }
+})();
 
