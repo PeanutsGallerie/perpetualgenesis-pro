@@ -2157,22 +2157,24 @@ canvas.appendChild(ob);
       n.classList.toggle("selected", i === selectedBedIndex);
     });
   }
-  function setSelectedBed(idx) {
-    if (typeof idx !== "number" || idx < 0 || idx >= bedCount) {
-      selectedBedIndex = null;
-    } else {
-      selectedBedIndex = idx;
-    }
-    // Mirror selection to stable id for external handlers
-    try { syncSelectedBedId(); } catch (e) {}
-    try { updateSelectedBedUI(); } catch (e) {}
-    applySelectionUI();
-    // If you have an offset control renderer, it can use selectedBedIndex later
-    if (typeof renderBedOffsetControls === "function") {
-      renderBedOffsetControls(bedCount);
-    }
-    try { if (typeof renderSelectedBedGrid === "function") renderSelectedBedGrid(selectedBedIndex); } catch (e) {}
+function setSelectedBed(idx) {
+  if (typeof idx !== "number" || idx < 0 || idx >= bedCount) {
+    selectedBedIndex = null;
+  } else {
+    selectedBedIndex = idx;
   }
+
+  try { syncSelectedBedId(); } catch (e) {}
+  try { updateSelectedBedUI(); } catch (e) {}
+  applySelectionUI();
+
+  // IMPORTANT: do NOT rebuild obstacle controls on mere selection
+  // (prevents mobile layout jump / canvas “expanding”)
+  try { renderPropertySelectedBedPanel(bedCount); } catch (e) {}
+
+  try { if (typeof renderSelectedBedGrid === "function") renderSelectedBedGrid(selectedBedIndex); } catch (e) {}
+}
+
   function createResizeHandle() {
     const h = document.createElement("div");
     h.className = "property-resize-handle";
