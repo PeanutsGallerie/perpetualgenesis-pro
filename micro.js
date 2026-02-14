@@ -35,9 +35,8 @@ function pgApplyGutterSize(wrapEl) {
   try {
     wrapEl.style.setProperty('--pg-gutter', pgGetGutterPx() + 'px');
   } catch (e) {}
+}
 
-
-};
 
 // Load AFTER layout.js. Does not change core business logic.
 // Adds:
@@ -83,8 +82,7 @@ function pgApplyGutterSize(wrapEl) {
   document.addEventListener("touchend", (ev) => {
     if (__pgIsFormInteractionTarget(ev.target)) __pgStop(ev);
   }, { capture: true, passive: true });
-  }, { capture: true, passive: true });
-
+  
   "use strict";
 
   function debounce(fn, wait) {
@@ -129,19 +127,22 @@ function pgApplyGutterSize(wrapEl) {
     if (window.__pgMicroResizeInstalled) return;
     window.__pgMicroResizeInstalled = true;
 
-    const rerender = debounce(() => {
-      try {
-        const canvas = getCanvas();
-        if (!isLayoutVisible() && !canvas) return;
-        if (window.Layout && typeof window.Layout.render === "function") {
-          window.Layout.render();
-        } else if (window.Layout && typeof window.Layout.init === "function") {
-          window.Layout.init();
-        }
-      } catch (e) {
-        // swallow
-      }
-    }, 150);
+const rerender = debounce(() => {
+  try {
+    // If user is editing a field, DO NOT rerender (prevents keyboard flicker + UI jump)
+    const ae = document.activeElement;
+    if (ae && ae.closest && ae.closest("input,textarea,select,[contenteditable='true']")) return;
+
+    const canvas = getCanvas();
+    if (!isLayoutVisible() && !canvas) return;
+
+    if (window.Layout && typeof window.Layout.render === "function") {
+      window.Layout.render();
+    } else if (window.Layout && typeof window.Layout.init === "function") {
+      window.Layout.init();
+    }
+  } catch (e) {}
+}, 150);
 
     window.addEventListener("resize", rerender, { passive: true });
     window.addEventListener("orientationchange", rerender, { passive: true });
@@ -794,4 +795,3 @@ updateZoomLimits();
     boot();
   }
 })();
-
