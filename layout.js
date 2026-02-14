@@ -2191,7 +2191,6 @@ if (!canvas._pgSelectionBound) {
       applySelectionUI();
       try { updateSelectedBedUI(); } catch (e) {}
       if (typeof renderBedOffsetControls === "function") {
-        renderBedOffsetControls(bedCount);
       } else {
         renderPropertySelectedBedPanel(bedCount);
       }
@@ -4586,15 +4585,21 @@ function renderObstacleControls(bedCount) {
     }
   });
 
-  // Auto-save + re-render helper
-  const rerender = () => {
-    const bedW = parseFloat(document.getElementById("layoutBedW")?.value) || 4;
-    const bedL = parseFloat(document.getElementById("layoutBedL")?.value) || 8;
-    // Rebuild the map first (it may clear/recreate UI around it), then rebuild the toolbar.
-    renderPropertySketch(bedCount, bedW, bedL);
-    renderBedOffsetControls(bedCount);
-    autoSave();
-  };
+// Auto-save + re-render helper (SAFE: no bed defaults, no toolbar rebuild)
+const rerender = () => {
+  try {
+    // Rerender using the last stable args (prevents 4x8 fallback + bed resets)
+    if (typeof window.__pgRerenderMap === "function") {
+      window.__pgRerenderMap();
+    } else {
+      // fallback only if needed
+      renderPropertySketchFromInputs(bedCount);
+    }
+  } catch (e) {}
+
+  try { autoSave(); } catch (e) {}
+};
+
 
   // Change listeners for all inputs/selects
   box.querySelectorAll('input, select').forEach(input => {
