@@ -3049,6 +3049,12 @@ function addBedFromCurrentPlan(planId) {
   const nextCount = dims.bedCount + 1;
   const newIndex = dims.bedCount;
 
+  // ✅ Preserve full bed objects before resizing bedCount
+const prevBeds = Array.isArray(propertyState?.beds)
+  ? propertyState.beds.map(b => b ? JSON.parse(JSON.stringify(b)) : null)
+  : [];
+const prevCount = prevBeds.length;
+
   // Sync from canonical propertyState (bed objects) before extending
   ensurePropertyStateInPlace(dims.bedCount, propertyState);
   bedOffsets = ensureBedOffsets(dims.bedCount, propertyState.beds.map(b => b.offset));
@@ -3091,6 +3097,12 @@ function addBedFromCurrentPlan(planId) {
   if (!pid) pid = byId("propFirstBedPlanSelect")?.value || null;
 
   if (!pid) {
+    const bedArr = Array.isArray(propertyState?.beds) ? propertyState.beds : [];
+    const isFirstBed = bedArr.length === 0;
+
+  if (isFirstBed) {
+    pid = getPrimaryMyGardenPlanId() || getDefaultMyGardenPlanId() || null;
+  } else {
     const anchor = getLastAssignedBedPlanId() || getPrimaryMyGardenPlanId() || null;
     pid =
       getNextUnusedMyGardenPlanIdAfter(anchor) ||
@@ -3098,6 +3110,8 @@ function addBedFromCurrentPlan(planId) {
       anchor ||
       null;
   }
+}
+
 
   if (pid && propertyState?.beds?.[newIndex]) {
     propertyState.beds[newIndex].planId = pid;
@@ -3108,8 +3122,9 @@ function addBedFromCurrentPlan(planId) {
   render();
   autoSave();
   try { saveBeds(); } catch(e) {}
-  try { autoFitProperty(); } catch(e) {}
-  try { pgScheduleRender({ fit: true }); } catch(e) { try { schedule(); } catch(_) {} }
+// ✅ Don’t refit the canvas during normal edits (causes mobile “expand/jump”)
+  try { pgScheduleRender({ fit: false }); } catch(e) { try { schedule(); } catch(_) {} }
+
   updateLayoutPlanActionAvailability();
 }
 
@@ -3464,6 +3479,22 @@ function removeBed() {
       propertyState.beds[i].rot = bedRot?.[i] ? 1 : 0;
     }
   }
+
+  // ✅ Restore full bed details for existing beds (prevents “stock size/type” reset)
+for (let i = 0; i < Math.min(prevCount, nextCount); i++) {
+  if (!prevBeds[i] || !propertyState?.beds?.[i]) continue;
+
+  const keepOffset = propertyState.beds[i].offset;
+  const keepRot = propertyState.beds[i].rot;
+
+  // overwrite bed with previous saved values
+  Object.assign(propertyState.beds[i], prevBeds[i]);
+
+  // re-apply authoritative positional fields (so we don’t lose latest drag state)
+  propertyState.beds[i].offset = keepOffset;
+  propertyState.beds[i].rot = keepRot;
+}
+
 
   // Keep global `beds` ref aligned with canonical propertyState.beds after deletion (prevents overlay "ghost beds").
   try { syncBedsRef(); } catch (e) {}
