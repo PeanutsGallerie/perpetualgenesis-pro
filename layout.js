@@ -3035,6 +3035,7 @@ function addBedFromCurrentPlan(planId) {
   // IMPORTANT: Adding a bed should NOT require a plan and should never trigger global resets.
   // Plan selection is optional here; population is explicit via "Populate Bed".
   const dims = readBedDimsFromInputs();
+
   // Monetization gate: Free = 1 bed
   try {
     if (typeof window.pgLimit === "function") {
@@ -3049,11 +3050,14 @@ function addBedFromCurrentPlan(planId) {
   const nextCount = dims.bedCount + 1;
   const newIndex = dims.bedCount;
 
+  // ✅ TRUE first-bed detection (must be captured BEFORE any ensure/extend)
+  const wasFirstBed = (dims.bedCount === 0);
+
   // ✅ Preserve full bed objects before resizing bedCount
-const prevBeds = Array.isArray(propertyState?.beds)
-  ? propertyState.beds.map(b => b ? JSON.parse(JSON.stringify(b)) : null)
-  : [];
-const prevCount = prevBeds.length;
+  const prevBeds = Array.isArray(propertyState?.beds)
+    ? propertyState.beds.map(b => (b ? JSON.parse(JSON.stringify(b)) : null))
+    : [];
+  const prevCount = prevBeds.length;
 
   // Sync from canonical propertyState (bed objects) before extending
   ensurePropertyStateInPlace(dims.bedCount, propertyState);
@@ -3075,8 +3079,26 @@ const prevCount = prevBeds.length;
   // Expand planting-square array without overwriting existing beds
   ensureEditableStateDims({ w: dims.w, l: dims.l, bedCount: nextCount, bedSq: Math.round(dims.w * dims.l) });
 
-  // Rebuild propertyState to the new count and sync offsets/rotations back into beds
+  // Rebuild propertyState to the new count
   ensurePropertyStateInPlace(nextCount, propertyState);
+
+  // ✅ Restore full bed objects for existing beds (prevents reset to stock defaults)
+  for (let i = 0; i < Math.min(prevCount, nextCount); i++) {
+    if (!prevBeds[i] || !propertyState?.beds?.[i]) continue;
+
+    // keep latest position/rotation from arrays (drag state)
+    const keepOffset = bedOffsets[i] || propertyState.beds[i].offset;
+    const keepRot = bedRot?.[i] ? 1 : 0;
+
+    // restore all bed fields
+    Object.assign(propertyState.beds[i], prevBeds[i]);
+
+    // re-apply authoritative positional fields
+    propertyState.beds[i].offset = keepOffset || { x: 0, y: 0 };
+    propertyState.beds[i].rot = keepRot;
+  }
+
+  // Sync offsets/rotations into any remaining beds (including the NEW bed)
   for (let i = 0; i < nextCount; i++) {
     if (propertyState.beds[i]) {
       propertyState.beds[i].offset = bedOffsets[i] || { x: 0, y: 0 };
@@ -3084,7 +3106,7 @@ const prevCount = prevBeds.length;
     }
   }
 
-  // Keep global `beds` ref aligned with canonical propertyState.beds (prevents overlay \"ghost beds\").
+  // Keep global `beds` ref aligned with canonical propertyState.beds (prevents overlay "ghost beds").
   try { syncBedsRef(); } catch (e) {}
 
   // Optional: assign plan metadata.
@@ -3096,22 +3118,19 @@ const prevCount = prevBeds.length;
   if (!pid) pid = (typeof newBedDefaultPlanId === "string" ? (newBedDefaultPlanId || null) : null);
   if (!pid) pid = byId("propFirstBedPlanSelect")?.value || null;
 
+  // ✅ Correct: first bed should start with Main Garden
   if (!pid) {
-    const bedArr = Array.isArray(propertyState?.beds) ? propertyState.beds : [];
-    const isFirstBed = bedArr.length === 0;
-
-  if (isFirstBed) {
-    pid = getPrimaryMyGardenPlanId() || getDefaultMyGardenPlanId() || null;
-  } else {
-    const anchor = getLastAssignedBedPlanId() || getPrimaryMyGardenPlanId() || null;
-    pid =
-      getNextUnusedMyGardenPlanIdAfter(anchor) ||
-      getNextUnusedMyGardenPlanId() ||
-      anchor ||
-      null;
+    if (wasFirstBed) {
+      pid = getPrimaryMyGardenPlanId() || getDefaultMyGardenPlanId() || null;
+    } else {
+      const anchor = getLastAssignedBedPlanId() || getPrimaryMyGardenPlanId() || null;
+      pid =
+        getNextUnusedMyGardenPlanIdAfter(anchor) ||
+        getNextUnusedMyGardenPlanId() ||
+        anchor ||
+        null;
+    }
   }
-}
-
 
   if (pid && propertyState?.beds?.[newIndex]) {
     propertyState.beds[newIndex].planId = pid;
@@ -3122,11 +3141,13 @@ const prevCount = prevBeds.length;
   render();
   autoSave();
   try { saveBeds(); } catch(e) {}
-// ✅ Don’t refit the canvas during normal edits (causes mobile “expand/jump”)
+
+  // ✅ Don’t refit the canvas during normal edits (causes mobile “expand/jump”)
   try { pgScheduleRender({ fit: false }); } catch(e) { try { schedule(); } catch(_) {} }
 
   updateLayoutPlanActionAvailability();
 }
+
 
 // Get a crop label from an entry (handles different shapes)
 function entryCropName(e) {
